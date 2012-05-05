@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2012 Ian Pearce (ian@ianpearce.org)
- * http://github.com/peeinears/
+ * http://github.com/peeinears/MagicEye.js
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -123,3 +123,22 @@ Render to an element that isn't this.el:
 
     var img = document.getElementById("other-img");
     magicEye.renderBMP(img);
+
+### Algorithm
+
+The main stereogram-generating algorithm was very closely adopted from
+an algorithm (written in C) that was featured in an article published in
+IEEE in 1994. The authors explain the algorithm in detail.
+
+#### Reference
+
+    Harold W. Thimbleby, Stuart Inglis, Ian H. Witten: Displaying 3D Images:
+    Algorithms for Single Image Random-Dot Stereograms. IEEE Journal
+    Computer, October 1994, S. 38 - 48.
+
+### Links
+
+ * [SIRDS on Wikipedia](http://en.wikipedia.org/wiki/Autostereogram#Random-dot)
+ * [Depth maps on Wikipedia](http://en.wikipedia.org/wiki/Depth_map)
+ * [PDF of paper with C algorithm](http://www.cs.sfu.ca/CourseCentral/414/li/material/refs/SIRDS-Computer-94.pdf)
+ * [Another JS autostereogram library!](https://github.com/dgtized/autostereogram/)
