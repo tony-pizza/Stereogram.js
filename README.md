@@ -3,26 +3,28 @@ MagicEye.js
 
 ## Description
 
-A JavaScript library for generating single image random dot stereograms (those &quot;Magic Eye&quot; things) in the browser. 
+A JavaScript library for generating single image random dot stereograms
+(SIRDS) AKA Autostereograms AKA those &quot;Magic Eye&quot; things in
+the browser (with or without `<canvas>`).
 https://github.com/peeinears/MagicEye.js
 
 ## Usage
 
 ### Setup
 
-#### Render pixel data to &lt;canvas&gt;
+#### Render pixel data to `<canvas>`
 
-Create a &lt;canvas&gt; with a width and height:
+Create a `<canvas>` with a width and height:
 
     <canvas id="magic-eye" width="500" height="400"></canvas>
 
-#### Render as Base64 encoded BMP to &lt;img&gt;
+#### Render as Base64 encoded BMP to `<img>`
 
 __Note:__ Requires Neil Fraser's bmp_lib
 (http://neil.fraser.name/software/bmp_lib/). Included in this repo at
 lib/bmp_lib.js.
 
-Create an &lt;img&gt; with a width and height:
+Create an `<img>` with a width and height:
 
     <img id="magic-eye" width="500" height="400" />
 
@@ -31,7 +33,7 @@ Create an &lt;img&gt; with a width and height:
 __Note:__ The following don't set depth maps, so they will be quite
 uninteresting.
 
-Create and render a new MagicEye object:
+Create and render a new `MagicEye` object:
 
     var magicEye = new MagicEye();
     magicEye.el = "magic-eye";
@@ -47,10 +49,12 @@ Pass in the element itself:
 
     var canvas = document.getElementById("magic-eye");
     var magicEye = new MagicEye({ el: canvas, width: 500, height: 400 });
+    magicEye.render();
     
 Inherit height and width from element:
 
     var magicEye = new MagicEye({ el: "magic-eye", adaptToElementSize: true });
+    magicEye.render();
     
 ### Depth Maps
 
@@ -58,17 +62,9 @@ MagicEye understands a couple different depth map formats. It also
 resizes depth maps to the width and height of your MagicEye. The idea
 here is to make it easy to write your own depth maps and try them out.
 
-#### Setting Depth Maps
-
-    var magicEye = new MagicEye({ el: "magic-eye", depthMap: myDepthMap}).render();
-
-or:
-
-    magicEye.depthMap = myDepthMap;
-
 #### Formats
 
-These each create a floating box at the center of the MagicEye:
+These each create a floating box at the center of the `MagicEye`:
 
     var myDepthMap = ["   ",
                       " # ",
@@ -96,6 +92,14 @@ Of course, you can have varying depths:
                       [0.0, 0.3, 0.6],
                       [0.3, 0.6, 0.9]];
 
+#### Setting Depth Maps
+
+    var magicEye = new MagicEye({ el: "magic-eye", depthMap: myDepthMap });
+
+or:
+
+    magicEye.depthMap = myDepthMap;
+
 ### Other Options
 
     var magicEye = new MagicEye({
@@ -103,6 +107,7 @@ Of course, you can have varying depths:
       width: 500,                 // defaults to 400
       height: 400,                // defaults to 300
       adaptToElementSize: true,   // defaults to false
+      depthMap: "01\n10",         // defaults to '0' (blank)
       numColors: 5,               // defaults to 10
       palette: [ [255, 0, 0],     // set pixel colors
                  [0, 255, 0],     // 2-d array of RGB vals
@@ -116,7 +121,7 @@ Generate a new random palette for an existing MagicEye:
 
     magicEye.regeneratePalette();
 
-Render to an element that isn't this.el:
+Render to an element that isn't `this.el`:
 
     var canvas = document.getElementById("other-canvas");
     magicEye.renderToCanvas(canvas);
@@ -126,15 +131,15 @@ Render to an element that isn't this.el:
 
 ### Algorithm
 
-The main stereogram-generating algorithm was very closely adopted from
+The main stereogram-generating algorithm was very closely adapted from
 an algorithm (written in C) that was featured in an article published in
 IEEE in 1994. The authors explain the algorithm in detail.
 
 #### Reference
 
-    Harold W. Thimbleby, Stuart Inglis, Ian H. Witten: Displaying 3D Images:
-    Algorithms for Single Image Random-Dot Stereograms. IEEE Journal
-    Computer, October 1994, S. 38 - 48.
+Harold W. Thimbleby, Stuart Inglis, Ian H. Witten: Displaying 3D Images:
+Algorithms for Single Image Random-Dot Stereograms. *IEEE Journal
+Computer*, October 1994, S. 38 - 48.
 
 ### Links
 
@@ -142,3 +147,9 @@ IEEE in 1994. The authors explain the algorithm in detail.
  * [Depth maps on Wikipedia](http://en.wikipedia.org/wiki/Depth_map)
  * [PDF of paper with C algorithm](http://www.cs.sfu.ca/CourseCentral/414/li/material/refs/SIRDS-Computer-94.pdf)
  * [Another JS autostereogram library!](https://github.com/dgtized/autostereogram/)
+ * [Neil Fraser's BMP
+   Library](http://neil.fraser.name/software/bmp_lib/)
+
+__Note:__ Code here is in no way affiliated with Magic Eye Inc. I just
+liked the name.
+
