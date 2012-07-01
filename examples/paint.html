@@ -54,6 +54,15 @@
           this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         },
 
+        loadImage: function (src) {
+          var self = this,
+              img = new Image();
+          img.onload = function () {
+            self.context.drawImage(img, 0, 0, self.canvas.width, self.canvas.height);
+          }
+          img.src = src;
+        },
+
         getDepthMap: function () {
           var depthMap, pixelData, width, height, x, y, row, offset;
           depthMap = [];
@@ -110,6 +119,10 @@
 
           document.getElementById("regenerate-palette").onclick = function () {
             self.magicEye.regeneratePalette().render();
+          };
+
+          document.getElementById("load-image").onclick = function () {
+            self.loadImage("trike.jpg");
           };
 
           document.getElementById("size").onchange = function () {
@@ -171,6 +184,7 @@
       <canvas id="paint" width="700" height="500"></canvas>
       <button id="render">Generate Magic Eye</button>
       <button id="regenerate-palette">Regenerate color palette</button>
+      <button id="load-image">Load image (trike.jpg)</button>
       <button id="clear">Clear</button>
       <hr>
       <img id="bmp" width="700" height="500" />
