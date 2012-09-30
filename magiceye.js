@@ -40,7 +40,8 @@ function MagicEye(opts) {
   function randomRGB() {
     return [Math.floor(Math.random() * 256),
             Math.floor(Math.random() * 256),
-            Math.floor(Math.random() * 256)];
+            Math.floor(Math.random() * 256),
+            255];
   }
 
   function generatePalette(numColors) {
@@ -256,10 +257,9 @@ function MagicEye(opts) {
       for (x = 0; x < this.width; x++) {
         rgb = this.palette[this.pixels[y][x]];
         xOffset = x * 4;
-        imageData.data[yOffset + xOffset] = rgb[0];
-        imageData.data[yOffset + xOffset + 1] = rgb[1];
-        imageData.data[yOffset + xOffset + 2] = rgb[2];
-        imageData.data[yOffset + xOffset + 3] = 255;
+        for (i = 0; i < 4; i++) {
+            imageData.data[yOffset + xOffset + i] = rgb[i];
+        }
       }
     }
     context.putImageData(imageData, 0, 0);
