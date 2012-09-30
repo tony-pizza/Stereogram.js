@@ -109,9 +109,9 @@ or:
       adaptToElementSize: true,   // defaults to false
       depthMap: "01\n10",         // defaults to '0' (blank)
       numColors: 5,               // defaults to 10
-      palette: [ [255, 0, 0],     // set pixel colors
-                 [0, 255, 0],     // 2-d array of RGB vals
-                 [0, 0, 255] ]    // generated randomly by default
+      palette: [ [255, 0, 0, 125],     // set pixel colors
+                 [0, 255, 0, 255],     // 2-d array of RGBa vals
+                 [0, 0, 255, 125] ]    // generated randomly by default
     });
 
 
