@@ -226,19 +226,18 @@
     return depthMap;
   };
 
-  MagicEye.prototype.renderBMP = function (img) {
-    // render Base64 encoded BMP to <img> with bmp_lib
-    if (!bmp_lib || !bmp_lib.render) {
-      throw('Stereogram.render: bmp_lib object not found');
-    }
-    this.setupRender(img);
-    bmp_lib.render(img, this.pixels, this.palette);
+  MagicEye.prototype.renderPNG = function (img) {
+    var canvas = document.createElement('canvas');
+    canvas.width = this.width;
+    canvas.height = this.height;
+    this.renderToCanvas(canvas);
+    img.src = canvas.toDataURL("image/png");
     return this;
   };
 
   MagicEye.prototype.renderToCanvas = function (canvas) {
-    this.setupRender(canvas);
-    var x, y, rgb, yOffset, xOffset,
+    this.setupRender();
+    var x, y, i, rgb, yOffset, xOffset,
         context = canvas.getContext("2d"),
         imageData = context.createImageData(this.width, this.height);
 
@@ -248,7 +247,7 @@
         rgb = this.palette[this.pixels[y][x]];
         xOffset = x * 4;
         for (i = 0; i < 4; i++) {
-            imageData.data[yOffset + xOffset + i] = rgb[i];
+          imageData.data[yOffset + xOffset + i] = rgb[i];
         }
       }
     }
@@ -258,26 +257,11 @@
 
   MagicEye.prototype.regeneratePalette = function (numColors) {
     this.numColors = numColors || this.numColors;
-    this.palette = generatePalette(this.numColors);
+    this.palette = this.generatePalette(this.numColors);
     return this;
   };
 
-  MagicEye.prototype.setupRender = function (element) {
-
-    // set size and generate depth map and pixel data
-
-    if (this.adaptToElementSize) {
-      if (!element || !element.tagName) {
-        throw('Stereogram.render: invalid element: ' + element);
-      }
-      if (typeof element.width === 'number' && typeof element.height === 'number') {
-        this.width = element.width;
-        this.height = element.height;
-      } else {
-        throw("Stereogram.render: adaptToElementSize set to true, but size of element " + element + " is unknown");
-      }
-    }
-
+  MagicEye.prototype.setupRender = function () {
     // generate properly formatted depth map from template
     this.rawDepthMap = this.formatDepthMap(this.width, this.height, this.depthMap);
 
@@ -291,15 +275,27 @@
     var element = (typeof this.el === 'string' ? document.getElementById(this.el) : this.el);
 
     if (!element || !element.tagName) {
-      throw('Stereogram.render: invalid element: ' + element);
+      throw('MagicEye.render(): invalid element: ' + element);
+    }
+
+    if (this.adaptToElementSize) {
+      if (!element || !element.tagName) {
+        throw('Stereogram.render: invalid element: ' + element);
+      }
+      if (typeof element.width === 'number' && typeof element.height === 'number') {
+        this.width = element.width;
+        this.height = element.height;
+      } else {
+        throw("Stereogram.render: adaptToElementSize set to true, but size of element " + element + " is unknown");
+      }
     }
 
     if (element.tagName.toLowerCase() === 'img') {
-      this.renderBMP(element);
+      this.renderPNG(element);
     } else if (element.tagName.toLowerCase() === 'canvas') {
       this.renderToCanvas(element);
     } else {
-      throw("Stereogram.render: invalid element, can only render to <img> or <canvas>");
+      throw("MagicEye.render(): invalid element, can only render to <img> or <canvas>");
     }
 
     return this;
