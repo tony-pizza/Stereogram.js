@@ -1,6 +1,6 @@
 {
-  "name": "MagicEye.js",
-  "description": "A JavaScript library for generating single image random dot stereograms (those \"Magic Eye\" things) in the browser",
+  "name": "magic-eye",
+  "description": "A JavaScript library for generating single image random dot stereograms (\"Magic Eye\") in the browser",
   "version": "0.1.0",
   "license": "MIT",
   "main": "magiceye.min.js",
