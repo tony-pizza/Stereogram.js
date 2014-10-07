@@ -1,0 +1,22 @@
+{
+  "name": "MagicEye.js",
+  "description": "A JavaScript library for generating single image random dot stereograms (those \"Magic Eye\" things) in the browser",
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "magiceye.min.js",
+  "homepage": "https://github.com/peeinears/MagicEye.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peeinears/MagicEye.js"
+  },
+  "author": "Ian Pearce <ian@ianpearce.com> (https://github.com/peeinears)",
+  "bugs": {
+    "url": "https://github.com/peeinears/MagicEye.js/issues"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "^0.6.0",
+    "uglify-save-license": "^0.4.1"
+  }
+}
