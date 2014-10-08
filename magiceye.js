@@ -233,15 +233,17 @@
 
   MagicEye.prototype._renderToCanvas = function (canvas) {
     canvas = canvas || this._element;
-    var i, x, rgba, yOffset, xOffset,
+    var i, rgba, offset,
         context = canvas.getContext("2d"),
         imageData = context.createImageData(this._width, this._height);
 
     for (i = 0; i < this._pixels.length; i++) {
       rgba = this.palette[this._pixels[i]];
-      for (x = 0; x < 4; x++) {
-        imageData.data[(i * 4) + x] = rgba[x];
-      }
+      offset = i * 4;
+      imageData.data[offset] = rgba[0];
+      imageData.data[offset + 1] = rgba[1];
+      imageData.data[offset + 2] = rgba[2];
+      imageData.data[offset + 3] = rgba[3];
     }
 
     context.putImageData(imageData, 0, 0);
