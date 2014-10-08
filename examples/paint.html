@@ -30,7 +30,6 @@
 
     </style>
 
-    <script type="text/javascript" src="../lib/bmp_lib.js"></script>
     <script type="text/javascript" src="../magiceye.js"></script>
     <script type="text/javascript">
 
@@ -104,7 +103,7 @@
             self.drawing = false;
           };
 
-          this.magicEye = new MagicEye({ el: "bmp", adaptToElementSize: true });
+          this.magicEye = new MagicEye('bmp', { adaptToElementSize: false });
           this.magicEye.render();
 
           document.getElementById("render").onclick = function () {

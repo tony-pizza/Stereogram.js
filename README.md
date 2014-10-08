@@ -4,57 +4,64 @@ MagicEye.js
 ## Description
 
 A JavaScript library for generating single image random dot stereograms
-(SIRDS) AKA Autostereograms AKA those &quot;Magic Eye&quot; things in
-the browser (with or without `<canvas>`).
+(SIRDS) AKA Autostereograms AKA Magic Eye in the browser.
+
 https://github.com/peeinears/MagicEye.js
 
 ## Usage
 
 ### Setup
 
-#### Render pixel data to `<canvas>`
+#### Render pixel data to a `<canvas>`
 
 Create a `<canvas>` with a width and height:
 
-    <canvas id="magic-eye" width="500" height="400"></canvas>
+```html
+<canvas id="magic-eye" width="500" height="400"></canvas>
+```
 
-#### Render as Base64 encoded BMP to `<img>`
-
-__Note:__ Requires Neil Fraser's bmp_lib
-(http://neil.fraser.name/software/bmp_lib/). Included in this repo at
-lib/bmp_lib.js.
+#### Render as Base64 encoded PNG to an `<img>`
 
 Create an `<img>` with a width and height:
 
-    <img id="magic-eye" width="500" height="400" />
+```html
+<img id="magic-eye" width="500" height="400" />
+```
 
 ### Basic Usage
 
-__Note:__ The following don't set depth maps, so they will be quite
-uninteresting.
+#### Initialize
 
-Create and render a new `MagicEye` object:
+__Pass in an element id:__
+```javascript
+var magicEye = new MagicEye('magic-eye');
+```
 
-    var magicEye = new MagicEye();
-    magicEye.el = "magic-eye";
-    magicEye.width = 500;
-    magicEye.height = 400;
-    magicEye.render();
+__Pass in a DOM element:__
+```javascript
+var canvas = document.createElement('canvas');
+var magicEye = new MagicEye(canvas);
+```
 
-One-line it:
+__With opts:__
+```javascript
+var magicEye = new MagicEye('magic-eye', {
+  width: 800,
+  height: 600,
+  depthMap: ['000', '010', '000'],
+  imageType: 'jpg',
+  palette: [
+    [255, 0, 0, 255],
+    [0, 255, 0, 255],
+    [0, 0, 255, 255]
+  ]
+});
+```
 
-    var magicEye = new MagicEye({ el: "magic-eye", width: 500, height: 400 }).render();
-
-Pass in the element itself:
-
-    var canvas = document.getElementById("magic-eye");
-    var magicEye = new MagicEye({ el: canvas, width: 500, height: 400 });
-    magicEye.render();
-    
-Inherit height and width from element:
-
-    var magicEye = new MagicEye({ el: "magic-eye", adaptToElementSize: true });
-    magicEye.render();
+#### Render
+```javascript
+magicEye.render();
+```
     
 ### Depth Maps
 

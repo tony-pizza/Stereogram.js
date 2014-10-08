@@ -7,45 +7,31 @@
 !(function(){
   'use strict';
 
-  window.MagicEye = function (opts) {
+  window.MagicEye = function (el, opts) {
     if (!opts) opts = {};
 
-    this.el = opts.el;
+    this.el = el;
 
     // set options to specified or default values
-    for (var property in this.defaultOptions) {
-      this[property] = (opts && opts[property]) ? opts[property] : this.defaultOptions[property];
+    for (var property in this._defaultOptions) {
+      this[property] = (opts && opts[property]) ? opts[property] : this._defaultOptions[property];
     }
-
-    if (!this.palette) this.palette = this.generatePalette(this.numColors);
 
     return this;
   };
 
-  MagicEye.prototype.defaultOptions = {
-    width: 400,
-    height: 300,
-    numColors: 10,
+  MagicEye.prototype._defaultOptions = {
+    width: null,
+    height: null,
     depthMap: '0',
-    adaptToElementSize: false
+    imageType: 'png',
+    palette: [
+      [255, 255, 255, 255],
+      [0, 0, 0, 255]
+    ]
   };
 
-  MagicEye.prototype.randomRGB = function () {
-    return [Math.floor(Math.random() * 256),
-            Math.floor(Math.random() * 256),
-            Math.floor(Math.random() * 256),
-            255];
-  };
-
-  MagicEye.prototype.generatePalette = function (numColors) {
-    var palette = [];
-    for (var i = 0; i < numColors; i++) {
-      palette.push(this.randomRGB());
-    }
-    return palette;
-  };
-
-  MagicEye.prototype.generatePixelData = function (width, height, depthMap, numColors) {
+  MagicEye.prototype._generatePixelData = function () {
 
     /*
      * This algorithm was published in a paper authored by by Harold W.
@@ -55,6 +41,10 @@
      */
 
     var x, y, left, right, visible, t, zt, k, sep, z, row,
+        width = this._width,
+        height = this._height,
+        depthMap = this._depthMap,
+        numColors = this.palette.length,
         same, // points to a pixel to the right
         dpi = 72, // assuming output of 72 dots per inch
         eyeSep = Math.round(2.5 * dpi), // eye separation assumed to be 2.5 inches
@@ -119,10 +109,11 @@
       pixels[y] = row;
     }
 
-    return pixels;
+    this._pixels = pixels;
+    return this;
   };
 
-  MagicEye.prototype.formatDepthMap = function (width, height, template) {
+  MagicEye.prototype._formatDepthMap = function () {
 
     /*
      * Resizes and converts depth maps of various formats into the format
@@ -159,6 +150,9 @@
      */
 
     var x, y, highest, templateY,
+        width = this._width,
+        height = this._height,
+        template = this.depthMap,
         templateHeight = 0,
         templateWidth = 0,
         tmpTemplate = [],
@@ -209,10 +203,10 @@
         }
 
       } else {
-        throw('Stereogram.formatDepthMap: invalid depth map template format');
+        throw('MagicEye: invalid depth map template format');
       }
     } else {
-      throw('Stereogram.formatDepthMap: invalid depth map template format');
+      throw('MagicEye: invalid depth map template format');
     }
 
     for (y = 0; y < height; y++) {
@@ -223,31 +217,33 @@
       }
     }
 
-    return depthMap;
-  };
-
-  MagicEye.prototype.renderPNG = function (img) {
-    var canvas = document.createElement('canvas');
-    canvas.width = this.width;
-    canvas.height = this.height;
-    this.renderToCanvas(canvas);
-    img.src = canvas.toDataURL("image/png");
+    this._depthMap = depthMap;
     return this;
   };
 
-  MagicEye.prototype.renderToCanvas = function (canvas) {
-    this.setupRender();
-    var x, y, i, rgb, yOffset, xOffset,
-        context = canvas.getContext("2d"),
-        imageData = context.createImageData(this.width, this.height);
+  MagicEye.prototype._renderToImg = function (img) {
+    img = img || this._element;
+    var canvas = document.createElement('canvas');
+    canvas.width = this._width;
+    canvas.height = this._height;
+    this._renderToCanvas(canvas);
+    img.src = canvas.toDataURL('image/' + this.imageType);
+    return this;
+  };
 
-    for (y = 0; y < this.height; y++) {
-      yOffset = y * this.width * 4;
-      for (x = 0; x < this.width; x++) {
-        rgb = this.palette[this.pixels[y][x]];
+  MagicEye.prototype._renderToCanvas = function (canvas) {
+    canvas = canvas || this._element;
+    var x, y, i, rgba, yOffset, xOffset,
+        context = canvas.getContext("2d"),
+        imageData = context.createImageData(this._width, this._height);
+
+    for (y = 0; y < this._height; y++) {
+      yOffset = y * this._width * 4;
+      for (x = 0; x < this._width; x++) {
+        rgba = this.palette[this._pixels[y][x]];
         xOffset = x * 4;
         for (i = 0; i < 4; i++) {
-          imageData.data[yOffset + xOffset + i] = rgb[i];
+          imageData.data[yOffset + xOffset + i] = rgba[i];
         }
       }
     }
@@ -255,50 +251,105 @@
     return this;
   };
 
-  MagicEye.prototype.regeneratePalette = function (numColors) {
-    this.numColors = numColors || this.numColors;
-    this.palette = this.generatePalette(this.numColors);
+  MagicEye.prototype._setElement = function () {
+    this._element = (typeof this.el === 'string' ? document.getElementById(this.el) : this.el);
+    if (!this._element || !this._element.tagName) throw('MagicEye: Could not find element: ' + this.el);
     return this;
   };
 
-  MagicEye.prototype.setupRender = function () {
-    // generate properly formatted depth map from template
-    this.rawDepthMap = this.formatDepthMap(this.width, this.height, this.depthMap);
-
-    // generate the pixel data for the stereogram
-    this.pixels = this.generatePixelData(this.width, this.height, this.rawDepthMap, this.numColors);
-
+  MagicEye.prototype._setHeightAndWidth = function () {
+    // use element's height and width unless height and width is provided
+    this._width = this.width || this._element.width;
+    if (!this._width) throw('MagicEye: width not set and could not be inferred from element: ' + this.el);
+    this._height = this.height || this._element.height;
+    if (!this._height) throw('MagicEye: height not set and could not be inferred from element: ' + this.el);
     return this;
+  };
+
+  MagicEye.prototype._setupRender = function () {
+    return this._setElement()
+      ._setHeightAndWidth()
+      ._formatDepthMap()
+      ._generatePixelData();
   };
 
   MagicEye.prototype.render = function () {
-    var element = (typeof this.el === 'string' ? document.getElementById(this.el) : this.el);
 
-    if (!element || !element.tagName) {
-      throw('MagicEye.render(): invalid element: ' + element);
-    }
+    this._setupRender();
 
-    if (this.adaptToElementSize) {
-      if (!element || !element.tagName) {
-        throw('Stereogram.render: invalid element: ' + element);
-      }
-      if (typeof element.width === 'number' && typeof element.height === 'number') {
-        this.width = element.width;
-        this.height = element.height;
-      } else {
-        throw("Stereogram.render: adaptToElementSize set to true, but size of element " + element + " is unknown");
-      }
-    }
-
-    if (element.tagName.toLowerCase() === 'img') {
-      this.renderPNG(element);
-    } else if (element.tagName.toLowerCase() === 'canvas') {
-      this.renderToCanvas(element);
-    } else {
-      throw("MagicEye.render(): invalid element, can only render to <img> or <canvas>");
+    switch (this._element.tagName.toLowerCase()) {
+      case 'img':
+        this._renderToImg();
+        break;
+      case 'canvas':
+        this._renderToCanvas();
+        break;
+      default:
+        throw("MagicEye: invalid element, can only render to <img> or <canvas>");
     }
 
     return this;
+  };
+
+
+  // -- Utils --
+
+  MagicEye.utils = {
+
+    // async
+    depthMapFromImageURL: function (src, fn) {
+      var img = new Image();
+      img.onload = function () {
+        fn.call(null, MagicEye.utils.depthMapFromImg(img));
+      };
+      img.src = src;
+    },
+
+    depthMapFromImg: function (img) {
+      // not async, assumes img is already loaded
+      var canvas = document.createElement('canvas'),
+          context = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      context.drawImage(img, 0, 0, canvas.width, canvas.height);
+      return MagicEye.utils.depthMapFromCanvas(canvas);
+    },
+
+    depthMapFromCanvas: function (canvas) {
+      var x, y, row, offset,
+          context = canvas.getContext("2d"),
+          depthMap = [],
+          width = canvas.width,
+          height = canvas.height,
+          pixelData = context.getImageData(0, 0, width, height).data;
+      for (y = 0; y < height; y++) {
+        row = [];
+        offset = width * y * 4;
+        for (x = 0; x < width; x++) {
+          // assume grayscale (R, G, and B are equal)
+          row.push(pixelData[offset + (x * 4)]);
+        }
+        depthMap.push(row);
+      }
+      return depthMap;
+    },
+
+    randomRGBa: function () {
+      return [Math.floor(Math.random() * 256),
+              Math.floor(Math.random() * 256),
+              Math.floor(Math.random() * 256),
+              255];
+    },
+
+    randomPalette: function (numColors) {
+      numColors = numColors || Math.ceil((Math.random() * 9) + 1); // 2 - 10
+      var palette = [];
+      for (var i = 0; i < numColors; i++) {
+        palette.push(MagicEye.utils.randomRGBa());
+      }
+      return palette;
+    }
+
   };
 
 })();
