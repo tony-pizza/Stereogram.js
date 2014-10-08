@@ -40,7 +40,7 @@
      * http://www.cs.sfu.ca/CourseCentral/414/li/material/refs/SIRDS-Computer-94.pdf
      */
 
-    var x, y, left, right, visible, t, zt, k, sep, z, row,
+    var x, y, left, right, visible, t, zt, k, sep, z, pixelOffset,
         width = this._width,
         height = this._height,
         depthMap = this._depthMap,
@@ -49,17 +49,18 @@
         dpi = 72, // assuming output of 72 dots per inch
         eyeSep = Math.round(2.5 * dpi), // eye separation assumed to be 2.5 inches
         mu = (1 / 3), // depth of field (fraction of viewing distance)
-        pixels = []; // two-dimensional array of pixels to be returned in the form pixels[y][x]
-                     // rather than storing RGB values here, we store a reference to a color in the palette
+        pixels = new Uint8ClampedArray(width * height);
 
+    // for each row
     for (y = 0; y < height; y++) {
-      row = [];
-      same = []; // points to a pixel to the right
+      same = new Uint16Array(width); // points to a pixel to the right
+                                     // max image width (for Uint16Array) is 65536
 
       for (x = 0; x < width; x++) {
         same[x] = x; // each pixel is initially linked with itself
       }
 
+      // for each column
       for (x = 0; x < width; x++) {
 
         z = depthMap[y][x];
@@ -96,17 +97,16 @@
         }
       }
 
+      pixelOffset = y * width;
       for (x = (width - 1); x >= 0; x--) {
         if (same[x] === x) {
           // set random color
-          row[x] = Math.floor(Math.random() * numColors);
+          pixels[pixelOffset + x] = Math.floor(Math.random() * numColors);
         } else {
           // constrained pixel, obey constraint
-          row[x] = row[same[x]];
+          pixels[pixelOffset + x] = pixels[pixelOffset + same[x]];
         }
       }
-
-      pixels[y] = row;
     }
 
     this._pixels = pixels;
@@ -233,20 +233,17 @@
 
   MagicEye.prototype._renderToCanvas = function (canvas) {
     canvas = canvas || this._element;
-    var x, y, i, rgba, yOffset, xOffset,
+    var i, x, rgba, yOffset, xOffset,
         context = canvas.getContext("2d"),
         imageData = context.createImageData(this._width, this._height);
 
-    for (y = 0; y < this._height; y++) {
-      yOffset = y * this._width * 4;
-      for (x = 0; x < this._width; x++) {
-        rgba = this.palette[this._pixels[y][x]];
-        xOffset = x * 4;
-        for (i = 0; i < 4; i++) {
-          imageData.data[yOffset + xOffset + i] = rgba[i];
-        }
+    for (i = 0; i < this._pixels.length; i++) {
+      rgba = this.palette[this._pixels[i]];
+      for (x = 0; x < 4; x++) {
+        imageData.data[(i * 4) + x] = rgba[x];
       }
     }
+
     context.putImageData(imageData, 0, 0);
     return this;
   };
