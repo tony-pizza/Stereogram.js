@@ -28,9 +28,20 @@
         float: right;
       }
 
+      #paint, #bmp {
+        width: 700px;
+        height: 300px;
+        outline: 1px solid blue;
+      }
+
     </style>
 
     <script type="text/javascript" src="../magiceye.js"></script>
+    <!--
+    <script type="text/javascript" src="../depthmappers/TemplateDepthMapper.js"></script>
+    <script type="text/javascript" src="../depthmappers/ImgDepthMapper.js"></script>
+    -->
+    <script type="text/javascript" src="../depthmappers/CanvasDepthMapper.js"></script>
     <script type="text/javascript">
 
       var paint = {
@@ -103,12 +114,17 @@
             self.drawing = false;
           };
 
-          this.magicEye = new MagicEye('bmp', { adaptToElementSize: false });
-          this.magicEye.render();
-
           document.getElementById("render").onclick = function () {
-            self.magicEye.depthMap = self.getDepthMap(self.canvas);
-            self.magicEye.render();
+            // self.magicEye.depthMap = self.getDepthMap(self.canvas);
+            // self.magicEye.render();
+
+            MagicEye.render({
+              el: 'bmp',
+              width: 700,
+              height: 300,
+              depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('paint'))
+              // depthMapper: new MagicEye.TemplateDepthMapper('000\n010\n000')
+            });
           };
 
           document.getElementById("clear").onclick = function () {
@@ -180,13 +196,13 @@
         <input id="value" type="range" min="0" max="255" step="15" value="255">
       </div>
 
-      <canvas id="paint" width="700" height="500"></canvas>
+      <canvas id="paint" width="700" height="300"></canvas>
       <button id="render">Generate Magic Eye</button>
       <button id="regenerate-palette">Regenerate color palette</button>
       <button id="load-image">Load image (trike.jpg)</button>
       <button id="clear">Clear</button>
       <hr>
-      <img id="bmp" width="700" height="500" />
+      <img id="bmp" /> <!--width="700" height="200" /-->
       <hr>
       <a href="http://ianpearce.org/">Ian Pearce, 2012</a>
       <a href="https://github.com/peeinears/MagicEye.js" style="float: right">MagicEye.js on Github</a>
