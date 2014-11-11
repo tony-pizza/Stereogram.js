@@ -20,7 +20,7 @@ MagicEye.CanvasDepthMapper = MagicEye.DepthMapper.extend({
       offset = width * y * 4;
       for (x = 0; x < width; x++) {
         // assume grayscale (R, G, and B are equal)
-        depthMap[y][x] = pixelData[offset + (x * 4)];
+        depthMap[y][x] = pixelData[offset + (x * 4)] / 255;
       }
     }
     return depthMap;
