@@ -28,7 +28,7 @@
         opts[property] = (opts && opts[property]) ? opts[property] : defaultOptions[property];
       }
 
-      var element, width, height, depthMap, colors, pixelData;
+      var element, width, height, depthMap, pixelData, i;
 
       // find and set element
       if (opts.el) {
@@ -48,6 +48,13 @@
       } else if (opts.depthMapper) {
         depthMap = opts.depthMapper.generate(width, height);
       } else throw('MagicEye: no depthMap or depthMapper opts given');
+
+      // convert hex colors to RGBa
+      for (i = 0; i < opts.colors.length; i++) {
+        if (typeof opts.colors[i] === 'string') {
+          opts.colors[i] = this.helpers.hexToRGBa(opts.colors[i]);
+        }
+      }
 
       pixelData = this.generatePixelData({
         width: width,
@@ -187,29 +194,7 @@
           parseInt(result[3], 16),
           255
         ] : null;
-        // return result ? {
-        //   r: parseInt(result[1], 16),
-        //   g: parseInt(result[2], 16),
-        //   b: parseInt(result[3], 16)
-        // } : null;
-      },
-
-      randomRGBa: function () {
-        return [Math.floor(Math.random() * 256),
-                Math.floor(Math.random() * 256),
-                Math.floor(Math.random() * 256),
-                255];
-      },
-
-      randomPalette: function (numColors) {
-        numColors = numColors || Math.ceil((Math.random() * 9) + 1); // 2 - 10
-        var palette = [];
-        for (var i = 0; i < numColors; i++) {
-          palette.push(MagicEye.helpers.randomRGBa());
-        }
-        return palette;
       }
-
     }
 
   };
