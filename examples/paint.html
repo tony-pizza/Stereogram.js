@@ -28,19 +28,11 @@
         float: right;
       }
 
-      #paint, #bmp {
-        width: 700px;
-        height: 300px;
-        outline: 1px solid blue;
-      }
-
     </style>
 
     <script type="text/javascript" src="../magiceye.js"></script>
-    <!--
     <script type="text/javascript" src="../depthmappers/TemplateDepthMapper.js"></script>
     <script type="text/javascript" src="../depthmappers/ImgDepthMapper.js"></script>
-    -->
     <script type="text/javascript" src="../depthmappers/CanvasDepthMapper.js"></script>
     <script type="text/javascript">
 
@@ -121,7 +113,8 @@
             MagicEye.render({
               el: 'bmp',
               width: 700,
-              height: 300,
+              height: 500,
+              colors: ['0f0', '00f', 'f00', 'ff0', 'f0f', '0ff'],
               depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('paint'))
               // depthMapper: new MagicEye.TemplateDepthMapper('000\n010\n000')
             });
@@ -196,7 +189,7 @@
         <input id="value" type="range" min="0" max="255" step="15" value="255">
       </div>
 
-      <canvas id="paint" width="700" height="300"></canvas>
+      <canvas id="paint" width="700" height="500"></canvas>
       <button id="render">Generate Magic Eye</button>
       <button id="regenerate-palette">Regenerate color palette</button>
       <button id="load-image">Load image (trike.jpg)</button>
