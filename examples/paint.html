@@ -8,6 +8,12 @@
 
       body {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background: #003;
+        color: #fff;
+      }
+
+      body, h1, h2, h3, h4, h5, p {
+        font-weight: 300;
       }
 
       #main {
@@ -16,7 +22,9 @@
       }
 
       input {
+        background: #003;
         width: 90%;
+        margin: 0;
       }
 
       .slider {
@@ -103,7 +111,7 @@
             self.drawing = false;
           };
 
-          this.magicEye = new MagicEye('bmp', { adaptToElementSize: false });
+          this.magicEye = new MagicEye('bmp', { width: 700, height: 500, adaptToElementSize: false });
           this.magicEye.render();
 
           document.getElementById("render").onclick = function () {
