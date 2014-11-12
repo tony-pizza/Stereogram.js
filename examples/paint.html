@@ -116,8 +116,8 @@
 
           MagicEye.render({
             el: 'bmp',
-            width: 700,
-            height: 500,
+            // width: 700,
+            // height: 500,
             colors: ['0f0', '00f', 'f00', 'ff0', 'f0f', '0ff'],
             depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('paint'))
           });
@@ -207,7 +207,7 @@
       <button id="load-image">Load image (trike.jpg)</button>
       <button id="clear">Clear</button>
       <hr>
-      <img id="bmp" />
+      <img id="bmp" width="700" height="500" src />
       <hr>
       <a href="http://ianpearce.org/">Ian Pearce, 2012</a>
       <a href="https://github.com/peeinears/MagicEye.js" style="float: right">MagicEye.js on Github</a>

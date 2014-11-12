@@ -3,67 +3,48 @@ MagicEye.js
 
 ## Description
 
-A JavaScript library for generating single image random dot stereograms
-(SIRDS) AKA Autostereograms AKA Magic Eye in the browser.
+MagicEye.js is a JavaScript library for generating "Magic Eye" images (technically single image random dot stereograms, or SIRDS) in the browser.
 
 https://github.com/peeinears/MagicEye.js
-
+  
 ## Usage
 
-### Setup
-
-#### Render pixel data to a `<canvas>`
-
-Create a `<canvas>` with a width and height:
+Put an `<img>` or `<canvas>` on the page.
 
 ```html
-<canvas id="magic-eye" width="500" height="400"></canvas>
+<img id="magic-eye" width="500" height="400" src />
 ```
 
-#### Render as Base64 encoded PNG to an `<img>`
-
-Create an `<img>` with a width and height:
+This example uses the _TemplateDepthMapper_, which lets you generate full-scale depth maps out of small templates. More on depth maps and _DepthMappers_ below.
 
 ```html
-<img id="magic-eye" width="500" height="400" />
-```
+<!-- Include magiceye.js -->
+<script src="magiceye.js" type="text/javascript"></script>
 
-### Basic Usage
+<!-- Include a DepthMapper -->
+<script src="TemplateDepthMapper.js" type="text/javascript"></script>
 
-#### Initialize
+<!-- Add an <img> to the page and give it an id, width and height -->
+<!-- Note: Some browsers require a src attribute (even if it's empty) -->
+<img id="magic-eye" width="500" height="400" src />
 
-__Pass in an element id:__
-```javascript
-var magicEye = new MagicEye('magic-eye');
-```
+<script type="text/javascript">
 
-__Pass in a DOM element:__
-```javascript
-var canvas = document.createElement('canvas');
-var magicEye = new MagicEye(canvas);
-```
-
-__With opts:__
-```javascript
-var magicEye = new MagicEye('magic-eye', {
-  width: 800,
-  height: 600,
-  depthMap: ['000', '010', '000'],
-  imageType: 'jpg',
-  palette: [
-    [255, 0, 0, 255],
-    [0, 255, 0, 255],
-    [0, 0, 255, 255]
-  ]
-});
-```
-
-#### Render
-```javascript
-magicEye.render();
+  // Create a depth map template
+  // (This one creates a centered hovering rectangle)
+  var depthMap = ['   ',
+                  ' # ',
+                  '   '];
+  
+  // Tell MagicEye to use your depth map template and render to your <img>
+  MagicEye.render({
+    el: 'magic-eye',
+    depthMapper: new MagicEye.TemplateDepthMapper(depthMap)
+  });
+</script>
 ```
     
-### Depth Maps
+### _TemplateDepthMapper_
 
 MagicEye understands a couple different depth map formats. It also
 resizes depth maps to the width and height of your MagicEye. The idea
@@ -98,43 +79,6 @@ Of course, you can have varying depths:
     var myDepthMap = [[0.0, 0.0, 0.3],
                       [0.0, 0.3, 0.6],
                       [0.3, 0.6, 0.9]];
-
-#### Setting Depth Maps
-
-    var magicEye = new MagicEye({ el: "magic-eye", depthMap: myDepthMap });
-
-or:
-
-    magicEye.depthMap = myDepthMap;
-
-### Other Options
-
-    var magicEye = new MagicEye({
-      el: "magic-eye",            // no default
-      width: 500,                 // defaults to 400
-      height: 400,                // defaults to 300
-      adaptToElementSize: true,   // defaults to false
-      depthMap: "01\n10",         // defaults to '0' (blank)
-      numColors: 5,               // defaults to 10
-      palette: [ [255, 0, 0, 125],     // set pixel colors
-                 [0, 255, 0, 255],     // 2-d array of RGBa vals
-                 [0, 0, 255, 125] ]    // generated randomly by default
-    });
-
-
-### Other Methods
-
-Generate a new random palette for an existing MagicEye:
-
-    magicEye.regeneratePalette();
-
-Render to an element that isn't `this.el`:
-
-    var canvas = document.getElementById("other-canvas");
-    magicEye.renderToCanvas(canvas);
-
-    var img = document.getElementById("other-img");
-    magicEye.renderBMP(img);
 
 ### Algorithm
 
