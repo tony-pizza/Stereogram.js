@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+<title>MagicEye.js Text Example</title>
+</head>
+<body>
+<script src="../magiceye.js" type="text/javascript"></script>
+<script src="../depthmappers/TextDepthMapper.js" type="text/javascript"></script>
+<img id="magiceye" width="800" height="600" src />
+<script>
+  MagicEye.render({
+    el: 'magiceye',
+    depthMapper: new MagicEye.TextDepthMapper('Hello World')
+  });
+</script>
+</body>
+</html>
