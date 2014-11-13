@@ -1,15 +1,13 @@
 MagicEye.js
 ===========
 
-## Description
-
 MagicEye.js is a JavaScript library for generating "Magic Eye" images (technically single image random dot stereograms, or SIRDS) in the browser.
 
 https://github.com/peeinears/MagicEye.js
   
 ## Usage
 
-Require `magiceye.js` and also a _DepthMapper_. Here we're using the _TextDepthMapper_, which generates depth maps of given text. (More on _DepthMappers_ below.)
+Require `magiceye.js` and also a `DepthMapper`. Here we're using the `TextDepthMapper`, which generates depth maps of given text. (More on `DepthMapper`s below.)
 
 ```html
 <script src="magiceye.js" type="text/javascript"></script>
@@ -22,7 +20,7 @@ Put an `<img>` or `<canvas>` on the page. Give it an `id` and set a `height` and
 <img id="magic-eye" width="500" height="400" src />
 ```
 
-Tell `MagicEye` to generate a magic eye based on the depth map created by _TextDepthMapper_ and render it to your `<img>`.
+Tell `MagicEye` to generate a magic eye based on the depth map created by `TextDepthMapper` and render it to your `<img>`.
 
 ```javascript
 MagicEye.render({
@@ -30,8 +28,26 @@ MagicEye.render({
   depthMapper: new MagicEye.TextDepthMapper("Hello World")
 });
 ```
-    
-### _TemplateDepthMapper_
+
+#### All together now...
+
+```html
+<script src="magiceye.js" type="text/javascript"></script>
+<script src="TextDepthMapper.js" type="text/javascript"></script>
+
+<img id="magic-eye" width="500" height="400" src />
+
+<script>
+MagicEye.render({
+  el: 'magic-eye',
+  depthMapper: new MagicEye.TextDepthMapper("Hello World")
+});
+</script>
+```
+
+## DepthMappers
+
+### `TemplateDepthMapper`
 
 MagicEye understands a couple different depth map formats. It also
 resizes depth maps to the width and height of your MagicEye. The idea
