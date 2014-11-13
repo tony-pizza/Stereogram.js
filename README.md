@@ -97,6 +97,38 @@ MagicEye.render({ el: 'my-magic-eye', depthMapper: new MyDepthMapper(...) });
 
 The following DepthMappers are included in this project in the `depthmappers/` directory.
 
+#### TextDepthMapper
+
+Generate depth maps of text. The text will appear hovering above the background, centered and sized to fit the image. The shorter the text the bigger and thus more legible.
+
+```javascript
+new TextDepthMapper("Hello!");
+```
+
+#### CanvasDepthMapper
+
+Generate depth maps by parsing pixel values in a `<canvas>`. See `examples/paint.html`.
+
+```html
+<canvas id="my-canvas" width="500" height="400"></canvas>
+<script>
+var canvas = document.getElementById('my-canvas');
+new CanvasDepthMapper(canvas);
+<script>
+```
+
+#### ImgDepthMapper
+
+Generate depth maps by parsing pixel values of an `<img>`. This basically let's you convert a black and white depth map image to a depth map for `MagicEye`.
+
+```html
+<img id="my-img" src="depthmap.jpg" />
+<script>
+var img = document.getElementById('my-img');
+new ImgDepthMapper(img);
+<script>
+```
+
 #### TemplateDepthMapper
 
 Generate full-scale depth maps from smaller hand-made templates.
