@@ -1,7 +1,7 @@
 MagicEye.js
 ===========
 
-MagicEye.js is a JavaScript library for generating "Magic Eye" images (technically single image random dot stereograms, or SIRDS) in the browser.
+MagicEye.js is a JavaScript library for generating "Magic Eye" images (technically single image random dot stereograms, or [SIRDS](http://en.wikipedia.org/wiki/Autostereogram#Random-dot)) in the browser.
 
 https://github.com/peeinears/MagicEye.js
   
@@ -194,30 +194,18 @@ I just thought it was cool.
 ### Algorithm
 
 The main stereogram-generating algorithm was very closely adapted from
-an algorithm (written in C) that was featured in an article published in
+an algorithm (written in C) that was featured in an [article](http://www.cs.sfu.ca/CourseCentral/414/li/material/refs/SIRDS-Computer-94.pdf) published in
 IEEE in 1994. The authors explain the algorithm in detail.
 
-#### Reference
+> Harold W. Thimbleby, Stuart Inglis, Ian H. Witten: Displaying 3D Images: Algorithms for Single Image Random-Dot Stereograms. *IEEE Journal Computer*, October 1994, S. 38 - 48.
 
-Harold W. Thimbleby, Stuart Inglis, Ian H. Witten: Displaying 3D Images:
-Algorithms for Single Image Random-Dot Stereograms. *IEEE Journal
-Computer*, October 1994, S. 38 - 48.
+### Disclaimer
 
-### Links
-
- * [SIRDS on Wikipedia](http://en.wikipedia.org/wiki/Autostereogram#Random-dot)
- * [Depth maps on Wikipedia](http://en.wikipedia.org/wiki/Depth_map)
- * [PDF of paper with C algorithm](http://www.cs.sfu.ca/CourseCentral/414/li/material/refs/SIRDS-Computer-94.pdf)
- * [Another JS autostereogram library!](https://github.com/dgtized/autostereogram/)
- * [Neil Fraser's BMP
-   Library](http://neil.fraser.name/software/bmp_lib/)
-
-__Note:__ Code here is in no way affiliated with Magic Eye Inc. I just
-liked the name.
+This project is in no way affiliated with Magic Eye Inc. I just liked the name.
 
 ### Author
 
-[Ian Pearce](http://ianpearce.org), [@peeinears](https://twitter.com/peeinears)
+[Ian Pearce](http://ianpearce.org) / [@peeinears](https://twitter.com/peeinears)
 
 ### License
 
