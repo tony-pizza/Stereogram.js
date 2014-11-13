@@ -45,9 +45,21 @@ MagicEye.render({
 </script>
 ```
 
+## Depth Maps
+
+To achieve the 3D illusion, [depth maps](http://en.wikipedia.org/wiki/Depth_map) tell `MagicEye` what parts should appear closer and what parts should appear farther away. `MagicEye` understands depth maps represtented as two-dimensional arrays where each nested array represents a horizontal row of points (or pixels) in the final image. Each element in the nested arrays is a float between 0.0 and 1.0 that describes the closeness of that point, where 1 is the closest and 0 is the farthest. For example:
+
+    [[0.0, 0.0, 0.0], //
+     [0.0, 1.0, 0.0], // a centered floating square
+     [0.0, 0.0, 0.0]] //
+     
+If you have a depth map of the correct size, you can pass it directly to via `MagicEye.render()`s `depthMap` option. That route is uncommon, though, because depth maps are a pain to write by hand. This is where _DepthMappers_ come in handy.
+
 ## DepthMappers
 
-### `TemplateDepthMapper`
+DepthMappers are tools for generating depth maps sized and formatted for `MagicEye`.
+
+### TemplateDepthMapper
 
 MagicEye understands a couple different depth map formats. It also
 resizes depth maps to the width and height of your MagicEye. The idea
