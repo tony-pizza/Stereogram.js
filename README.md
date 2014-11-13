@@ -9,39 +9,26 @@ https://github.com/peeinears/MagicEye.js
   
 ## Usage
 
-Put an `<img>` or `<canvas>` on the page.
+Require `magiceye.js` and also a _DepthMapper_. Here we're using the _TextDepthMapper_, which generates depth maps of given text. (More on _DepthMappers_ below.)
+
+```html
+<script src="magiceye.js" type="text/javascript"></script>
+<script src="TextDepthMapper.js" type="text/javascript"></script>
+```
+
+Put an `<img>` or `<canvas>` on the page. Give it an `id` and set a `height` and `width`. Note: `<img>`s should always have a `src` attribute, even if it's empty.
 
 ```html
 <img id="magic-eye" width="500" height="400" src />
 ```
 
-This example uses the _TemplateDepthMapper_, which lets you generate full-scale depth maps out of small templates. More on depth maps and _DepthMappers_ below.
+Tell `MagicEye` to generate a magic eye based on the depth map created by _TextDepthMapper_ and render it to your `<img>`.
 
-```html
-<!-- Include magiceye.js -->
-<script src="magiceye.js" type="text/javascript"></script>
-
-<!-- Include a DepthMapper -->
-<script src="TemplateDepthMapper.js" type="text/javascript"></script>
-
-<!-- Add an <img> to the page and give it an id, width and height -->
-<!-- Note: Some browsers require a src attribute (even if it's empty) -->
-<img id="magic-eye" width="500" height="400" src />
-
-<script type="text/javascript">
-
-  // Create a depth map template
-  // (This one creates a centered hovering rectangle)
-  var depthMap = ['   ',
-                  ' # ',
-                  '   '];
-  
-  // Tell MagicEye to use your depth map template and render to your <img>
-  MagicEye.render({
-    el: 'magic-eye',
-    depthMapper: new MagicEye.TemplateDepthMapper(depthMap)
-  });
-</script>
+```javascript
+MagicEye.render({
+  el: 'magic-eye',
+  depthMapper: new MagicEye.TextDepthMapper("Hello World")
+});
 ```
     
 ### _TemplateDepthMapper_
