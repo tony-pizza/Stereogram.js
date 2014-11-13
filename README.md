@@ -187,6 +187,10 @@ magicEye.depthMap = [
 ];
 ```
 
+### Wait, what? Why?
+
+I just thought it was cool.
+
 ### Algorithm
 
 The main stereogram-generating algorithm was very closely adapted from
@@ -210,4 +214,12 @@ Computer*, October 1994, S. 38 - 48.
 
 __Note:__ Code here is in no way affiliated with Magic Eye Inc. I just
 liked the name.
+
+### Author
+
+[Ian Pearce](http://ianpearce.org), [@peeinears](https://twitter.com/peeinears)
+
+### License
+
+MIT
 
