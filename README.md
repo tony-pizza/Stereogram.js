@@ -212,7 +212,7 @@ This project is in no way affiliated with Magic Eye Inc. I just liked the name.
 
 ### Author
 
-[Ian Pearce](http://ianpearce.org) / [@peeinears](https://twitter.com/peeinears)
+[Ian Pearce](http://ianpearce.org) / [@peeinears](https://github.com/peeinears)
 
 ### License
 
