@@ -66,33 +66,6 @@ var depthMapper = new MagicEye.DepthMapper(...);
 var depthMap = depthMapper.generate(500, 400);
 ```
 
-### Creating your own DepthMappers
-
-```javascript
-var MyDepthMapper = MagicEye.DepthMapper.extend({
-
-  // If true or left out your DepthMapper will automatically resize
-  //  the depth map generated in `make()` to the correct dimensions.
-  autoResize: false, // default: true
-
-  constructor: function (...) {
-    // If your constructor takes arguments, you should set them on
-    //  `this` so you can access them in `make()`.
-    // e.g. this.someSetting = someArgument;
-  },
-
-  // The `make()` method actually generates and returns the depth map
-  make: function (width, height) {
-    // code to build a depth map
-    return depthMap; // a nested array of floats between 0 and 1
-  }
-
-});
-
-// Use it!
-MagicEye.render({ el: 'my-magic-eye', depthMapper: new MyDepthMapper(...) });
-```
-
 ### Included DepthMappers
 
 The following DepthMappers are included in this project in the `depthmappers/` directory.
@@ -187,6 +160,40 @@ magicEye.depthMap = [
 ];
 ```
 
+### Creating your own DepthMappers
+
+Extend depth mapper and define your own `constructor()` and `make()` methods.
+
+```javascript
+var MyDepthMapper = MagicEye.DepthMapper.extend({
+
+  // If true or left out your DepthMapper will automatically resize
+  //  the depth map generated in `make()` to the correct dimensions.
+  autoResize: false, // default: true
+
+  constructor: function (...) {
+    // If your constructor takes arguments, you should set them on
+    //  `this` so you can access them in `make()`.
+    // e.g. this.someSetting = someArgument;
+  },
+
+  // The `make()` method actually generates and returns the depth map
+  make: function (width, height) {
+    // code to build a depth map
+    return depthMap; // a nested array of floats between 0 and 1
+  }
+
+});
+```
+
+Use it!
+
+```javascript
+MagicEye.render({ el: 'my-magic-eye', depthMapper: new MyDepthMapper(...) });
+```
+
+## Other Stuff...
+
 ### Wait, what? Why?
 
 I just thought it was cool.
@@ -210,4 +217,3 @@ This project is in no way affiliated with Magic Eye Inc. I just liked the name.
 ### License
 
 MIT
-
