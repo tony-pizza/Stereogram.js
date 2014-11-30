@@ -76,12 +76,12 @@ table {
 
 @font-face {
     font-family: 'sofia_prolight';
-    src: url('assets/SofiaProLight-webfont.eot');
-    src: url('assets/SofiaProLight-webfont.eot?#iefix') format('embedded-opentype'),
-         url('assets/SofiaProLight-webfont.woff2') format('woff2'),
-         url('assets/SofiaProLight-webfont.woff') format('woff'),
-         url('assets/SofiaProLight-webfont.ttf') format('truetype'),
-         url('assets/SofiaProLight-webfont.svg#sofia_prolight') format('svg');
+    src: url('SofiaProLight-webfont.eot');
+    src: url('SofiaProLight-webfont.eot?#iefix') format('embedded-opentype'),
+         url('SofiaProLight-webfont.woff2') format('woff2'),
+         url('SofiaProLight-webfont.woff') format('woff'),
+         url('SofiaProLight-webfont.ttf') format('truetype'),
+         url('SofiaProLight-webfont.svg#sofia_prolight') format('svg');
     font-weight: normal;
     font-style: normal;
 }
