@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+  <title>MagicEye.js</title>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta content="MagicEye.js is a JavaScript library for generating \"Magic Eye\" images (single image random dot stereograms, or SIRDS) in the browser." name="description" />
+  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, autostereogram, SIRDS" name="keywords" />
+  <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700italic,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'>
+  <link href="/assets/styles.css" media="all" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <header>
+    <h1>MagicEye.js</h2>
+    <div>
+      <span>by Ian Pearce</span>
+      &bull; 
+      <a href="https://github.com/peeinears/MagicEye.js">Fork on Github</a>
+    </div>
+  </header>
+  <section>
+    <canvas id="canvas" width="1000" height="600"></canvas>
+    <img id="magiceye" width="1000" height="600" style="display: none;" src />
+    <br />
+    <div class="buttons">
+      <button id="show-magiceye">Show Magic Eye</button>
+      <button id="show-canvas">Show Depth Map</button>
+      <button id="redraw">Redraw Shapes</button>
+    </div>
+  </section>
+  <section>
+    <hr></hr>
+    <p>
+      <a href="https://github.com/peeinears/MagicEye.js">MagicEye.js</a> is a JavaScript library for generating "Magic Eye" images in the browser. Technically, it generates single-image random dot stereograms, or SIRDS.
+    </p>
+    <p>
+      In the above example, pixel values from an HTML5 Canvas are turned into depth data, which are then used to generate a Magic Eye image. The code looks something like this:
+    </p>
+    <pre>var canvas = document.getElementById('canvas');
+MagicEye.render({
+  el: 'magiceye',
+  depthMapper: new MagicEye.CanvasDepthMapper(canvas)
+});</pre>
+    <p>
+      More info about MagicEye.js and how to use it can be found on <a href="https://github.com/peeinears/MagicEye.js">Github</a>.
+    <p>Fork and enjoy!</p>
+    </p>
+  </section>
+  <footer>
+    <span>Ian Pearce</span>
+    &bull; 
+    <a href="https://github.com/peeinears/MagicEye.js">Github</a>
+  </footer>
+
+  <script type="text/javascript" src="/magiceye.js"></script>
+  <script type="text/javascript" src="/depthmappers/CanvasDepthMapper.js"></script>
+
+  <script>
+    (function() {
+
+      var canvas = document.getElementById("canvas"),
+          context = this.canvas.getContext("2d"),
+          magicEye = document.getElementById("magiceye"),
+          showingMagicEye = false;
+
+      window.addEventListener('resize', resize, false);
+
+      document.getElementById('show-magiceye').onclick = function () {
+        renderMagicEye();
+        canvas.style.display = 'none';
+        magicEye.style.display = 'block';
+        document.getElementById('show-magiceye').style.display = 'none';
+        document.getElementById('show-canvas').style.display = 'inline';
+        showingMagicEye = true;
+      };
+
+      document.getElementById('show-canvas').onclick = function () {
+        magicEye.style.display = 'none';
+        canvas.style.display = 'block';
+        document.getElementById('show-magiceye').style.display = 'inline';
+        document.getElementById('show-canvas').style.display = 'none';
+        showingMagicEye = false;
+      };
+
+      document.getElementById('redraw').onclick = function () {
+        redraw();
+        if (showingMagicEye) {
+          renderMagicEye();
+        }
+      };
+
+      function renderMagicEye() {
+        MagicEye.render({
+          el: 'magiceye',
+          colors: generatePalette(10),
+          depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('canvas'))
+        });
+      };
+
+      function randomRGBa() {
+        return [Math.floor(Math.random() * 256),
+                Math.floor(Math.random() * 256),
+                Math.floor(Math.random() * 256),
+                255];
+      };
+
+      function generatePalette(numColors) {
+        var palette = [];
+        for (var i = 0; i < numColors; i++) {
+          palette.push(randomRGBa());
+        }
+        return palette;
+      };
+
+      function redraw() {
+        var fill, i,
+            width = canvas.width,
+            height = canvas.height,
+            shapes = 5,
+            shade = 255 / shapes;
+
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, width, height);
+
+        for (i = shapes - 1; i >= 0; i--) {
+          fill = Math.round(shade * i);
+          context.fillStyle = 'rgb(' + fill + ',' + fill + ',' + fill + ')';
+          context.beginPath();
+          context.moveTo(Math.floor(Math.random() * width), Math.floor(Math.random() * height));
+          context.lineTo(Math.floor(Math.random() * width), Math.floor(Math.random() * height));
+          context.lineTo(Math.floor(Math.random() * width), Math.floor(Math.random() * height));
+          context.fill();
+        }
+      };
+    
+      function resize() {
+        magicEye.width = canvas.width = window.innerWidth > 1000 ? 1000 : window.innerWidth;
+        redraw();
+      };
+
+      resize();
+
+      document.getElementById('show-magiceye').click();
+
+    })();
+  </script>
+</body>
+</html>
+
