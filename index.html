@@ -22,11 +22,39 @@
   <section>
     <canvas id="canvas" width="1000" height="600"></canvas>
     <img id="magiceye" width="1000" height="600" style="display: none;" src />
-    <br />
     <div class="buttons">
+
+      <form name="brush">
+      <div class="brush-swatches">
+        <input name="value" type="radio" class="brush-value" id="brush-100" value="100" />
+        <label for="brush-100"></label>
+        <input name="value" type="radio" class="brush-value" id="brush-75" value="75" />
+        <label for="brush-75"></label>
+        <input name="value" type="radio" class="brush-value" id="brush-50" value="50" />
+        <label for="brush-50"></label>
+        <input name="value" type="radio" class="brush-value" id="brush-25" value="25" />
+        <label for="brush-25"></label>
+        <input name="value" type="radio" class="brush-value" id="brush-0" value="0" />
+        <label for="brush-0"></label>
+      </div>
+
+      <div class="brush-sizes">
+        <input name="size" type="radio" class="brush-size" id="sm-brush" value="10" />
+        <label for="sm-brush"></label>
+        <input name="size" type="radio" class="brush-size" id="md-brush" value="20" />
+        <label for="md-brush"></label>
+        <input name="size" type="radio" class="brush-size" id="lg-brush" value="40" />
+        <label for="lg-brush"></label>
+      </div>
+    </form>
+
+      <div class="clearfix"></div>
+
       <button id="show-magiceye">Show Magic Eye</button>
       <button id="show-canvas">Show Depth Map</button>
       <button id="redraw">Redraw Shapes</button>
+      <button id="clear">Clear</button>
+
     </div>
   </section>
   <section>
@@ -90,20 +118,39 @@ MagicEye.render({
         }
       };
 
+      document.getElementById('clear').onclick = function () {
+        clear();
+        if (showingMagicEye) {
+          document.getElementById('show-canvas').click();
+        }
+      };
+
+      for (var i = 0; i < document.brush.value.length; i++) {
+        document.brush.value[i].onchange = function () {
+          brush.value = Math.ceil(parseInt(document.brush.value.value) * 255 / 100);
+        };
+      };
+
+      for (var i = 0; i < document.brush.size.length; i++) {
+        document.brush.size[i].onchange = function () {
+          brush.size = parseInt(document.brush.size.value);
+        };
+      };
+
       function renderMagicEye() {
         MagicEye.render({
           el: 'magiceye',
           colors: generatePalette(10),
           depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('canvas'))
         });
-      };
+      }
 
       function randomRGBa() {
         return [Math.floor(Math.random() * 256),
                 Math.floor(Math.random() * 256),
                 Math.floor(Math.random() * 256),
                 255];
-      };
+      }
 
       function generatePalette(numColors) {
         var palette = [];
@@ -111,7 +158,7 @@ MagicEye.render({
           palette.push(randomRGBa());
         }
         return palette;
-      };
+      }
 
       function redraw() {
         var fill, i,
@@ -120,8 +167,7 @@ MagicEye.render({
             shapes = 5,
             shade = 255 / shapes;
 
-        context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, width, height);
+        clear();
 
         for (i = shapes - 1; i >= 0; i--) {
           fill = Math.round(shade * i);
@@ -132,15 +178,75 @@ MagicEye.render({
           context.lineTo(Math.floor(Math.random() * width), Math.floor(Math.random() * height));
           context.fill();
         }
-      };
+      }
+
+      function clear() {
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+      }
     
       function resize() {
         magicEye.width = canvas.width = window.innerWidth > 1000 ? 1000 : window.innerWidth;
         redraw();
+      }
+
+
+      // -- drawing code
+
+      var px, py,
+          drawing = false;
+          x = 0,
+          y = 0;
+
+      var brush = {
+        value: 0,
+        size: 10,
+        opacity: 0.5
+      };
+
+      function draw(x, y, w, v, a){
+        var gradient = context.createRadialGradient(x, y, 0, x, y, w);
+        gradient.addColorStop(0, 'rgba(' + v + ',' + v + ',' + v  + ',' + a + ')');
+        gradient.addColorStop(1, 'rgba(' + v + ',' + v + ',' + v  + ',0)');
+        
+        context.beginPath();
+        context.arc(x, y, w, 0, 2 * Math.PI);
+        context.fillStyle = gradient;
+        context.fill();
+        context.closePath();
+      };
+
+      canvas.onmousedown = function (e) {
+        drawing = true;
+        px = e.offsetX;
+        py = e.offsetY;
+        draw(px, py, brush.size, brush.value, brush.opacity);
+      };
+
+      document.body.onmouseup = function () {
+        drawing = false;
+      };
+
+      canvas.onmousemove = function (e) {
+        if (drawing) {
+          x = e.offsetX;
+          y = e.offsetY;
+          
+          var dis = Math.sqrt(Math.pow(px - x, 2) + Math.pow(px - y, 2));
+
+          for (var i = 0; i < dis; i++) {
+            var s = i / dis;
+            draw(px * s + x * (1 - s), py * s + y * (1 - s), brush.size, brush.value, brush.opacity);
+          }
+          px = x;
+          py = y;
+        }
       };
 
       resize();
 
+      document.brush.size[2].click();
+      document.brush.value[4].click();
       document.getElementById('show-magiceye').click();
 
     })();

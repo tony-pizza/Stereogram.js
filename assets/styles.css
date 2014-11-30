@@ -144,6 +144,14 @@ pre {
   padding: 20px;
 }
 
+.clearfix,
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  display: table;
+  clear: both;
+}
+
 button {
   background: transparent;
   border: 1px solid #B04388;
@@ -171,6 +179,77 @@ button:hover {
   margin: 0 auto;
 }
 
+#canvas:hover {
+  cursor: crosshair;
+}
+
 .buttons {
+  margin-top: 20px;
   text-align: center;
 }
+
+.brush-swatches {
+  display: inline;
+  float: left;
+  padding-top: 10px;
+}
+
+.brush-sizes {
+  display: inline;
+  float: right;
+  height: 80px;
+}
+
+input.brush-value {
+  display: none;
+}
+
+input.brush-value + label {
+  display: inline-block;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0 5px;
+  width: 30px;
+  height: 30px;
+}
+
+input.brush-value:checked + label, input.brush-value + label:hover {
+  border-color: #B04388 !important;
+}
+
+input.brush-value + label:hover {
+  cursor: pointer;
+}
+
+#brush-0   + label{ background: #000; border-color: #000; }
+#brush-25  + label{ background: #333; border-color: #333; }
+#brush-50  + label{ background: #666; border-color: #666; }
+#brush-75  + label{ background: #999; border-color: #999; }
+#brush-100 + label{ background: #fff; border-color: #aaa; }
+
+input.brush-size {
+  display: none;
+}
+
+input.brush-size + label {
+  display: block;
+  float: left;
+  border: none;
+  border-radius: 100%;
+  background: #aaa;
+  margin: 0 10px;
+}
+
+input.brush-size:checked + label, input.brush-size + label:hover {
+  background: #B04388 !important;
+}
+
+input.brush-size + label:hover {
+  cursor: pointer;
+}
+
+#sm-brush + label { width: 20px; height: 20px; margin-top: 20px; }
+#md-brush + label { width: 40px; height: 40px; margin-top: 10px; }
+#lg-brush + label { width: 60px; height: 60px; }
