@@ -249,8 +249,8 @@ MagicEye.render({
       canvas.onmousedown = function (e) {
         if (!drawMode) return;
         drawing = true;
-        px = e.offsetX;
-        py = e.offsetY;
+        px = e.pageX - canvas.offsetLeft;
+        py = e.pageY - canvas.offsetTop;
         draw(px, py, brush.size, brush.value, brush.opacity);
       };
 
@@ -262,8 +262,8 @@ MagicEye.render({
       canvas.onmousemove = function (e) {
         if (!drawMode) return;
         if (drawing) {
-          x = e.offsetX;
-          y = e.offsetY;
+          x = e.pageX - canvas.offsetLeft;
+          y = e.pageY - canvas.offsetTop;
           
           var dis = Math.sqrt(Math.pow(px - x, 2) + Math.pow(px - y, 2));
 
