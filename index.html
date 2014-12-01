@@ -130,15 +130,27 @@ MagicEye.render({
 
       for (var i = 0; i < document.brush.value.length; i++) {
         document.brush.value[i].onchange = function () {
-          brush.value = Math.ceil(parseInt(document.brush.value.value) * 255 / 100);
+          brush.value = Math.ceil(parseInt(getRadioVal(document.brush, 'value')) * 255 / 100);
         };
       };
 
       for (var i = 0; i < document.brush.size.length; i++) {
         document.brush.size[i].onchange = function () {
-          brush.size = parseInt(document.brush.size.value);
+          brush.size = parseInt(getRadioVal(document.brush, 'size'));
         };
       };
+
+      function getRadioVal(form, name) {
+        if (typeof form.elements[name].value !== undefined) return form.elements[name].value;
+        var val, radios = form.elements[name];
+        for (var i = 0; i < radios.length; i++) {
+          if ( radios[i].checked ) {
+            val = radios[i].value;
+            break;
+          }
+        }
+        return val;
+      }
 
       function renderMagicEye() {
         MagicEye.render({
