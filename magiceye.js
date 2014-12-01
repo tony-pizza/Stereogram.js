@@ -25,7 +25,7 @@
       };
 
       for (var property in defaultOptions) {
-        opts[property] = (opts && opts[property]) ? opts[property] : defaultOptions[property];
+        if( ! opts.hasOwnProperty(property) ) opts[property] = defaultOptions[property];
       }
 
       var element, width, height, depthMap, pixelData, i;
