@@ -215,11 +215,12 @@ input.brush-value + label {
   height: 30px;
 }
 
-input.brush-value:checked + label, input.brush-value + label:hover {
+input.brush-value:checked + label {
   border-color: #B04388 !important;
 }
 
 input.brush-value + label:hover {
+  border-color: #BD81A7 !important;
   cursor: pointer;
 }
 
@@ -242,11 +243,12 @@ input.brush-size + label {
   margin: 0 10px;
 }
 
-input.brush-size:checked + label, input.brush-size + label:hover {
+input.brush-size:checked + label {
   background: #B04388 !important;
 }
 
 input.brush-size + label:hover {
+  background: #BD81A7 !important;
   cursor: pointer;
 }
 

@@ -20,40 +20,42 @@
     </div>
   </header>
   <section>
-    <canvas id="canvas" width="1000" height="600"></canvas>
+    <canvas id="canvas" width="1000" height="600">Sorry, your browser doesn't support HTML5 Canvas!</canvas>
     <img id="magiceye" width="1000" height="600" style="display: none;" src />
     <div class="buttons">
 
-      <form name="brush">
-      <div class="brush-swatches">
-        <input name="value" type="radio" class="brush-value" id="brush-100" value="100" />
-        <label for="brush-100"></label>
-        <input name="value" type="radio" class="brush-value" id="brush-75" value="75" />
-        <label for="brush-75"></label>
-        <input name="value" type="radio" class="brush-value" id="brush-50" value="50" />
-        <label for="brush-50"></label>
-        <input name="value" type="radio" class="brush-value" id="brush-25" value="25" />
-        <label for="brush-25"></label>
-        <input name="value" type="radio" class="brush-value" id="brush-0" value="0" />
-        <label for="brush-0"></label>
-      </div>
+      <form name="brush" style="display: none;">
+        <div class="brush-swatches">
+          <input name="value" type="radio" class="brush-value" id="brush-100" value="100" />
+          <label for="brush-100"></label>
+          <input name="value" type="radio" class="brush-value" id="brush-75" value="75" />
+          <label for="brush-75"></label>
+          <input name="value" type="radio" class="brush-value" id="brush-50" value="50" />
+          <label for="brush-50"></label>
+          <input name="value" type="radio" class="brush-value" id="brush-25" value="25" />
+          <label for="brush-25"></label>
+          <input name="value" type="radio" class="brush-value" id="brush-0" value="0" />
+          <label for="brush-0"></label>
+        </div>
 
-      <div class="brush-sizes">
-        <input name="size" type="radio" class="brush-size" id="sm-brush" value="10" />
-        <label for="sm-brush"></label>
-        <input name="size" type="radio" class="brush-size" id="md-brush" value="20" />
-        <label for="md-brush"></label>
-        <input name="size" type="radio" class="brush-size" id="lg-brush" value="40" />
-        <label for="lg-brush"></label>
-      </div>
-    </form>
+        <div class="brush-sizes">
+          <input name="size" type="radio" class="brush-size" id="sm-brush" value="10" />
+          <label for="sm-brush"></label>
+          <input name="size" type="radio" class="brush-size" id="md-brush" value="20" />
+          <label for="md-brush"></label>
+          <input name="size" type="radio" class="brush-size" id="lg-brush" value="40" />
+          <label for="lg-brush"></label>
+        </div>
+      </form>
 
       <div class="clearfix"></div>
 
       <button id="show-magiceye">Show Magic Eye</button>
       <button id="show-canvas">Show Depth Map</button>
       <button id="redraw">Redraw Shapes</button>
-      <button id="clear">Clear</button>
+      <button id="draw-mode">Draw Your Own!</button>
+      <button id="back-to-shapes" style="display: none;">Back to Shapes</button>
+      <button id="clear" style="display: none;">Clear</button>
 
     </div>
   </section>
@@ -90,6 +92,7 @@ MagicEye.render({
       var canvas = document.getElementById("canvas"),
           context = this.canvas.getContext("2d"),
           magicEye = document.getElementById("magiceye"),
+          drawMode = false,
           showingMagicEye = false;
 
       window.addEventListener('resize', resize, false);
@@ -193,6 +196,32 @@ MagicEye.render({
 
       // -- drawing code
 
+      document.getElementById('draw-mode').onclick = function () {
+        drawMode = true;
+        canvas.style.border = '1px solid #aaa';
+        document.getElementById('redraw').style.display = 'none';
+        this.style.display = 'none';
+        var clearBtn = document.getElementById('clear');
+        clearBtn.click();
+        clearBtn.style.display = 'inline';
+        document.brush.style.display = 'inline';
+        document.getElementById('back-to-shapes').style.display = 'inline';
+      }
+
+      document.getElementById('back-to-shapes').onclick = function () {
+        drawMode = false;
+        canvas.style.border = 'none';
+        document.getElementById('redraw').style.display = 'inline';
+        this.style.display = 'none';
+        var clearBtn = document.getElementById('clear');
+        clearBtn.click();
+        clearBtn.style.display = 'none';
+        document.brush.style.display = 'none';
+        document.getElementById('draw-mode').style.display = 'inline';
+        redraw();
+        document.getElementById('show-magiceye').click();
+      }
+
       var px, py,
           drawing = false;
           x = 0,
@@ -204,7 +233,8 @@ MagicEye.render({
         opacity: 0.5
       };
 
-      function draw(x, y, w, v, a){
+      function draw(x, y, w, v, a) {
+        if (!drawMode) return;
         var gradient = context.createRadialGradient(x, y, 0, x, y, w);
         gradient.addColorStop(0, 'rgba(' + v + ',' + v + ',' + v  + ',' + a + ')');
         gradient.addColorStop(1, 'rgba(' + v + ',' + v + ',' + v  + ',0)');
@@ -217,6 +247,7 @@ MagicEye.render({
       };
 
       canvas.onmousedown = function (e) {
+        if (!drawMode) return;
         drawing = true;
         px = e.offsetX;
         py = e.offsetY;
@@ -224,10 +255,12 @@ MagicEye.render({
       };
 
       document.body.onmouseup = function () {
+        if (!drawMode) return;
         drawing = false;
       };
 
       canvas.onmousemove = function (e) {
+        if (!drawMode) return;
         if (drawing) {
           x = e.offsetX;
           y = e.offsetY;
@@ -250,6 +283,16 @@ MagicEye.render({
       document.getElementById('show-magiceye').click();
 
     })();
+  </script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-57234045-1', 'auto');
+    ga('send', 'pageview');
   </script>
 </body>
 </html>
