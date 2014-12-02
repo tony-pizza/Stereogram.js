@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "homepage": "https://github.com/peeinears/MagicEye.js",
   "authors": [
-    "Ian Pearce <ian@ianpearce.com> (https://github.com/peeinears)"
+    "Ian Pearce <ian@ianpearce.org> (https://github.com/peeinears)"
   ],
   "description": "A JavaScript library for generating single image random dot stereograms (\"Magic Eye\") in the browser",
   "keywords": [
