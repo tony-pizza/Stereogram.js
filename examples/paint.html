@@ -114,23 +114,35 @@
             self.drawing = false;
           };
 
-          MagicEye.render({
-            el: 'bmp',
-            // width: 700,
-            // height: 500,
-            colors: ['0f0', '00f', 'f00', 'ff0', 'f0f', '0ff'],
-            depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('paint'))
-          });
+          function randomRGBa() {
+            return [Math.floor(Math.random() * 256),
+                    Math.floor(Math.random() * 256),
+                    Math.floor(Math.random() * 256),
+                    255];
+          }
 
-          document.getElementById("render").onclick = function () {
+          self.generatePalette = function(numColors) {
+            var palette = [];
+            for (var i = 0; i < numColors; i++) {
+              palette.push(randomRGBa());
+            }
+            return palette;
+          }
+
+          self.render = function(){
             MagicEye.render({
               el: 'bmp',
               width: 700,
               height: 500,
-              colors: ['0f0', '00f', 'f00', 'ff0', 'f0f', '0ff'],
+              colors: self.pallete,
               depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('paint'))
             });
-          };
+          }
+
+          self.pallete = self.generatePalette(10);
+          self.render();
+
+          document.getElementById("render").onclick = self.render;
 
           document.getElementById("clear").onclick = function () {
             self.context.fillStyle = "#000000";
@@ -138,13 +150,15 @@
           };
 
           document.getElementById("regenerate-palette").onclick = function () {
-            self.magicEye.regeneratePalette().render();
+            self.pallete = self.generatePalette(10);
+            self.render();
           };
 
           document.getElementById("image").onchange = function (e) {
             var reader = new FileReader();
             reader.onload = function(event){
                 self.loadImage(event.target.result);
+                self.render();
             }
             reader.readAsDataURL(e.target.files[0]);
           };
