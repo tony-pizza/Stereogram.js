@@ -3,7 +3,7 @@ MagicEye.js
 
 MagicEye.js is a JavaScript library for generating "Magic Eye" images (technically single image random dot stereograms, or [SIRDS](http://en.wikipedia.org/wiki/Autostereogram#Random-dot)) in the browser.
 
-https://github.com/peeinears/MagicEye.js
+View the demo: [http://peeinears.github.io/MagicEye.js](http://peeinears.github.io/MagicEye.js/)
   
 ## Usage
 

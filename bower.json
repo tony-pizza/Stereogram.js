@@ -1,0 +1,22 @@
+{
+  "name": "magic-eye",
+  "main": ["magiceye.min.js", "depthmappers/*.js"],
+  "version": "0.2.0",
+  "homepage": "https://github.com/peeinears/MagicEye.js",
+  "authors": [
+    "Ian Pearce <ian@ianpearce.org> (https://github.com/peeinears)"
+  ],
+  "description": "A JavaScript library for generating single image random dot stereograms (\"Magic Eye\") in the browser",
+  "keywords": [
+    "magiceye",
+    "image",
+    "stereogram"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "Gruntfile.js",
+    "package.json",
+    "examples"
+  ]
+}
