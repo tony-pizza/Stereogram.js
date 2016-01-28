@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+  <title>MagicEye.js - Image</title>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta content="MagicEye.js is a JavaScript library for generating \"Magic Eye\" images (single image random dot stereograms, or SIRDS) in the browser." name="description" />
+  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, autostereogram, SIRDS" name="keywords" />
+  <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700italic,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'>
+  <link href="assets/styles.css" media="all" rel="stylesheet" type="text/css" />
+  <style>
+    #file-input {
+      visibility: hidden;
+      width: 0;
+      height: 0;
+    }
+
+    #magic-eye {
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>JPG &rarr; Magic Eye</h2>
+    <div>
+      <span>by Ian Pearce</span>
+      &bull; 
+      <a href="https://github.com/peeinears/MagicEye.js">Fork on Github</a>
+    </div>
+  </header>
+  <section>
+    <canvas id="canvas-preview" style="display: none;"></canvas>
+    <input id="file-input" type="file" accept="image/jpeg">
+    <img id="magic-eye" style="display: none;" src />
+    <div class="buttons">
+
+      <label for="file-input" class="button">Choose Image (JPG Only!)</label>
+      <button id="change-colors">Change Colors</button>
+
+    </div>
+  </section>
+  <section>
+    <hr></hr>
+    <p>
+      This page lets you convert your own depth map images into Magic Eyes.
+    </p>
+    <p>
+      Your image should be black and white (greyscale). The lighter a region is, the closer it will appear.
+      See <a href="/examples/trike.jpg">trike.jpg</a> as an example.
+    </p>
+    <p>
+      Only JPG files work for now! And even then, some JPGs might not work. If you're having issues try running your image through a JPG converter <a href="http://image.online-convert.com/convert-to-jpg">like this one</a>.
+    </p>
+    <p>
+      There's no server, so your images don't actually get uploaded anywhere.
+    </p>
+    <hr></hr>
+    <h2>
+      Why only JPG?
+    </h2>
+    <p>
+      As a cross-origin security feature, HTML5 canvas doesn't let you read its pixel data once you've dirtied it with an image from outside the current domain.
+      In order to read an image's pixel data in the browser without canvas we're using <a href="https://github.com/notmasteryet/jpgjs">jpgjs</a>, a JavaScript JPG decoder by <a href="https://github.com/notmasteryet">@notmasteryet</a>.
+    </p>
+  </section>
+  <footer>
+    <span>Ian Pearce</span>
+    &bull; 
+    <a href="https://github.com/peeinears/MagicEye.js">Github</a>
+  </footer>
+
+  <script type="text/javascript" src="magiceye.js"></script>
+  <script type="text/javascript" src="depthmappers/CanvasDepthMapper.js"></script>
+  <script type="text/javascript" src="http://notmasteryet.github.io/jpgjs/jpg.js"></script>
+
+  <script>
+    (function() {
+
+      var input = document.querySelector('input#file-input');
+
+      input.addEventListener('change', function () {
+
+        var magiceye = document.querySelector('img#magic-eye');
+        var canvas   = document.querySelector('canvas#canvas-preview');
+        var file     = input.files[0];
+        var reader   = new FileReader();
+        
+        reader.addEventListener("load", function () {
+          var jpg = new JpegImage();
+          jpg.onload = function () {
+            magiceye.width = canvas.width = jpg.width;
+            magiceye.height = canvas.height = jpg.height;
+            var ctx = canvas.getContext("2d");
+            var data = ctx.getImageData(0, 0, jpg.width, jpg.height);
+            jpg.copyToImageData(data);
+            ctx.putImageData(data, 0, 0);
+            MagicEye.render({
+              el: 'magic-eye',
+              colors: generatePalette(10),
+              depthMapper: new MagicEye.CanvasDepthMapper(canvas, { inverted: false })
+            });
+            magiceye.style.display = 'block';
+          };
+          jpg.load(reader.result);
+        }, false);
+
+        if (file) {
+          reader.readAsDataURL(file);
+        }
+        
+      });
+
+      document.getElementById('change-colors').onclick = function () {
+        var canvas   = document.querySelector('canvas#canvas-preview');
+            MagicEye.render({
+              el: 'magic-eye',
+              colors: generatePalette(10),
+              depthMapper: new MagicEye.CanvasDepthMapper(canvas, { inverted: false })
+            });
+      };
+
+      function randomRGBa() {
+        return [Math.floor(Math.random() * 256),
+                Math.floor(Math.random() * 256),
+                Math.floor(Math.random() * 256),
+                255];
+      }
+
+      function generatePalette(numColors) {
+        var palette = [];
+        for (var i = 0; i < numColors; i++) {
+          palette.push(randomRGBa());
+        }
+        return palette;
+      }
+
+    })();
+  </script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-57234045-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>

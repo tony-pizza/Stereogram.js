@@ -114,6 +114,10 @@ h1 {
   font-weight: 100;
 }
 
+h2 {
+  font-weight: 600;
+}
+
 header, footer {
   color: #aaa;
   text-align: center;
@@ -126,13 +130,13 @@ section {
   max-width: 100%;
 }
 
-section p, section pre {
+section p, section pre, section h2 {
   width: 600px;
   max-width: 100%;
   margin: 20px auto;
 }
 
-section p {
+section p, section h2 {
   padding: 0 20px;
 }
 
@@ -152,12 +156,13 @@ pre {
   clear: both;
 }
 
-button {
+button, .button {
   background: transparent;
   border: 1px solid #B04388;
   border-radius: 0;
   box-shadow: none;
   color: #B04388;
+  display: inline-block;
   font-family: 'sofia_prolight', serif;
   font-size: .9em;
   line-height: 1.5;
@@ -166,7 +171,7 @@ button {
   padding: 5px 10px;
 }
 
-button:hover {
+button:hover, .button:hover {
   background: #B04388;
   color: #fff;
   cursor: pointer;
