@@ -86,8 +86,6 @@ table {
     font-style: normal;
 }
 
-<<<<<<< Updated upstream
-=======
 /* Removes inner padding and border in Firefox 4+. */
 button::-moz-focus-inner,
 input::-moz-focus-inner {
@@ -95,7 +93,6 @@ input::-moz-focus-inner {
   padding: 0;
 }
 
->>>>>>> Stashed changes
 body {
   color: #7D3061;
   line-height: 1.5;
@@ -166,11 +163,7 @@ pre {
   clear: both;
 }
 
-<<<<<<< Updated upstream
-button, .button {
-=======
 button, .button, input[type=text] {
->>>>>>> Stashed changes
   background: transparent;
   border: 1px solid #B04388;
   border-radius: 0;
