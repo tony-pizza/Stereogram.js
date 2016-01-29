@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+  <title>Text &rarr; MagicEye.js</title>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta content="MagicEye.js is a JavaScript library for generating \"Magic Eye\" images (single image random dot stereograms, or SIRDS) in the browser." name="description" />
+  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, autostereogram, SIRDS" name="keywords" />
+  <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700italic,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'>
+  <link href="assets/styles.css" media="all" rel="stylesheet" type="text/css" />
+  <style>
+    #magic-eye {
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+
+    #render-btn {
+      margin-left: -9px;
+      border-left: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Text &rarr; Magic Eye</h2>
+    <div>
+      <span>by Ian Pearce</span>
+      &bull; 
+      <a href="https://github.com/peeinears/MagicEye.js">Fork on Github</a>
+    </div>
+  </header>
+  <section>
+    <img id="magiceye" src />
+    <div class="buttons">
+
+      <form id="text-form">
+        <input id="text-input" type="text" placeholder="Write here...">
+        <button id="render-btn" type="submit">Go!</button>
+      </form>
+
+    </div>
+  </section>
+  <section>
+    <hr></hr>
+    <p>
+      This page lets you easily generate Magic Eyes that display floating text.
+    </p>
+    <p>
+      There are no options to stylize or customize at the moment.
+      Your text will show up centered, sized to fit, in bold Helvetica.
+    </p>
+    <p>
+      The text gets increasingly harder to make out the longer it is.
+    </p>
+  </section>
+  <footer>
+    <span>Ian Pearce</span>
+    &bull; 
+    <a href="https://github.com/peeinears/MagicEye.js">Github</a>
+  </footer>
+
+  <script type="text/javascript" src="magiceye.js"></script>
+  <script type="text/javascript" src="depthmappers/TextDepthMapper.js"></script>
+
+  <script>
+    (function() {
+
+      document.querySelector('form#text-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var text = document.querySelector('input#text-input').value;
+        renderMagicEye(text);
+      });
+
+      function renderMagicEye(text) {
+        MagicEye.render({
+          el: 'magiceye',
+          colors: generatePalette(10),
+          depthMapper: new MagicEye.TextDepthMapper(text, { textAlign: 'center' })
+        });
+      }
+
+      function randomRGBa() {
+        return [Math.floor(Math.random() * 256),
+                Math.floor(Math.random() * 256),
+                Math.floor(Math.random() * 256),
+                255];
+      }
+
+      function generatePalette(numColors) {
+        var palette = [];
+        for (var i = 0; i < numColors; i++) {
+          palette.push(randomRGBa());
+        }
+        return palette;
+      }
+
+      renderMagicEye('hey sup');
+
+    })();
+  </script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-57234045-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
