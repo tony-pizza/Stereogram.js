@@ -6,8 +6,8 @@ MagicEye.js is a JavaScript library for generating "Magic Eye" images (technical
 View the demo: [http://peeinears.github.io/MagicEye.js](http://peeinears.github.io/MagicEye.js/)
 
 Or check out these other demos:
- - [http://peeinears.github.io/MagicEye.js/text-to-magiceye.html](Text to Magic Eye)
- - [http://peeinears.github.io/MagicEye.js/jpg-to-magiceye.html](JPG to Magic Eye)
+ - [Text to Magic Eye](http://peeinears.github.io/MagicEye.js/text-to-magiceye.html)
+ - [JPG to Magic Eye](http://peeinears.github.io/MagicEye.js/jpg-to-magiceye.html)
   
 ## Usage
 
