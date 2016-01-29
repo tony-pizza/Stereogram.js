@@ -3,8 +3,9 @@
 //
 MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
 
-  constructor: function (text) {
+  constructor: function (text, opts) {
     this.text = text;
+    this.opts = opts;
   },
 
   make: function (width, height) {
@@ -17,16 +18,24 @@ MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
     context.fillRect(0, 0, width, height);
     context.fillStyle = 'rgb(255,255,255)';
 
+    var defaultTextWrapperOptions = {
+      font: "bold 48px Helvetica, Arial, sans-serif",
+      paddingX: Math.round(width * 0.1),
+      paddingY: Math.round(height * 0.1),
+      sizeToFill: true,
+      verticalAlign: 'middle'
+    };
+
+    this.opts = this.opts || {};
+
+    for (var property in defaultTextWrapperOptions) {
+      this.opts[property] = (this.opts && this.opts[property]) ? this.opts[property] : defaultTextWrapperOptions[property];
+    }
+
     new CanvasTextWrapper(
       canvas,
       this.text,
-      {
-        font: "bold 48px Helvetica, Arial, sans-serif",
-        paddingX: Math.round(width * 0.1),
-        paddingY: Math.round(height * 0.1),
-        sizeToFill: true,
-        verticalAlign: 'middle'
-      }
+      this.opts
     );
 
     var x, y, offset,
