@@ -33,17 +33,16 @@
  */
 
 MagicEye.TemplateDepthMapper = MagicEye.DepthMapper.extend({
-
   constructor: function (template) {
     this.template = template;
   },
 
   make: function () {
-
-    var x, y, highest, templateY,
-        template = this.template,
-        templateWidth = 0,
-        depthMap = [];
+    var x;
+    var y;
+    var highest;
+    var template = this.template;
+    var templateWidth = 0;
 
     // '   \n # \n   ' --> ['   ', ' # ', '   ']
     if (typeof template === 'string') {
@@ -51,10 +50,8 @@ MagicEye.TemplateDepthMapper = MagicEye.DepthMapper.extend({
     }
 
     if (typeof template === 'object' && template.hasOwnProperty(0)) {
-
       // ['   ', ' # ', '   '] --> [[0, 0, 0], [0, 1, 0], [0, 0, 0]]
       if (typeof template[0] === 'string') {
-
         for (y = 0; y < template.length; y++) {
           template[y] = template[y].replace(/ /g, '0'); // replace spaces with 0
           template[y] = template[y].replace(/[^\d\n]/g, '1'); // replace non-digits with 1
@@ -62,14 +59,12 @@ MagicEye.TemplateDepthMapper = MagicEye.DepthMapper.extend({
 
           // turn ['0', '1', '0'] into [0, 1, 0]
           for (x = 0; x < template[y].length; x++) {
-            template[y][x] = parseInt(template[y][x]);
+            template[y][x] = parseInt(template[y][x], 10);
           }
         }
-
       }
 
       if (typeof template[0] === 'object') {
-
         // get template width and highest level
         highest = 0;
         for (y = 0; y < template.length; y++) {
@@ -93,15 +88,13 @@ MagicEye.TemplateDepthMapper = MagicEye.DepthMapper.extend({
             }
           }
         }
-
       } else {
-        throw('MagicEye: invalid depth map template format');
+        throw new Error('MagicEye: invalid depth map template format');
       }
     } else {
-      throw('MagicEye: invalid depth map template format');
+      throw new Error('MagicEye: invalid depth map template format');
     }
 
     return template;
-  },
-
+  }
 });
