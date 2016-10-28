@@ -14,9 +14,16 @@
     "url": "https://github.com/peeinears/MagicEye.js/issues"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.6.0",
-    "uglify-save-license": "^0.4.1"
+    "eslint": "^2.13.1",
+    "eslint-config-airbnb-base": "^3.0.1",
+    "eslint-plugin-import": "^1.15.0",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^2.1.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-todo": "^5.0.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-watch": "^4.3.9"
   }
 }
