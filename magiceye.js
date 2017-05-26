@@ -55,7 +55,7 @@
         depthMap = opts.depthMap;
       } else if (opts.text) {
         require("./depthmappers/TextDepthMapper.js");
-        var depthMapper = new MagicEye.TextDepthMapper(opts.text);
+        var depthMapper = new MagicEye.TextDepthMapper(opts.text, { textAlign: "center" });
         var depthMap = depthMapper.generate(width, height);
       } else if (opts.depthMapper) {
         depthMap = opts.depthMapper.generate(width, height);
