@@ -1,6 +1,9 @@
 //
 // Generates depth map from text
 //
+if (!MagicEye) {
+  var MagicEye = require("../magiceye.js").MagicEye;
+}
 MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
 
   constructor: function (text, opts) {
@@ -8,8 +11,20 @@ MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
     this.opts = opts;
   },
 
+  // generate: function (width, height) {
+  //   if (this.autoResize) return this.resize(this.make(width, height), width, height);
+  //   else return this.make(width, height);
+  // };
+
   make: function (width, height) {
-    var canvas = document.createElement('canvas');
+    var canvas;
+    if (this.opts.useNodeCanvas) {
+      var Canvas = require("canvas");
+        // Image = Canvas.Image,
+      canvas = new Canvas(width, height);
+    } else {
+      canvas = document.createElement('canvas');
+    }
     canvas.width = width;
     canvas.height = height;
 
@@ -76,7 +91,7 @@ MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
         sizeToFill: false      // text is resized to fill the container height (given font size is ignored)
     };
 
-    window.CanvasTextWrapper = function(canvas, text, opts) {
+    var constructor = function(canvas, text, opts) {
 
         if (!(this instanceof CanvasTextWrapper)) {
             throw new TypeError('CanvasTextWrapper constructor failed. Use "new" keyword when instantiating.');
@@ -103,6 +118,12 @@ MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
 
         this.drawText();
     };
+
+    if (typeof window === 'undefined') {
+      global.CanvasTextWrapper = constructor;
+    } else {
+      window.CanvasTextWrapper = constructor;
+    }
 
     CanvasTextWrapper.prototype = {
 
@@ -221,8 +242,15 @@ MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
         },
 
         validate: function() {
-            if (!(this.canvas instanceof HTMLCanvasElement)) {
+            if (typeof window === 'undefined') {
+              var Canvas = require("canvas");
+              if (!(this.canvas instanceof Canvas)) {
+                throw new TypeError('From CanvasTextWrapper(): Element passed as the first parameter is not an instance of Canvas.');
+              }
+            } else {
+              if (!(this.canvas instanceof HTMLCanvasElement)) {
                 throw new TypeError('From CanvasTextWrapper(): Element passed as the first parameter is not an instance of HTMLCanvasElement.');
+              }
             }
             if (typeof this.text !== 'string') {
                 throw new TypeError('From CanvasTextWrapper(): The second, dedicated for the text, parameter must be a string.');

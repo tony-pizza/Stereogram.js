@@ -90,6 +90,43 @@
       context.putImageData(imageData, 0, 0);
     },
 
+    // To create images in the context of a node script, without a browser
+    renderToFile: function (opts) {
+      var width = opts.width,
+        height = opts.height,
+        colors = opts.colors,
+        output = opts.output,
+        text = opts.text;
+      var depthParams = {useNodeCanvas: true};
+      var depthMapper = opts.depthMapper ? new opts.depthMapper("2", depthParams) : new MagicEye.DepthMapper();
+      var depthMap = depthMapper.generate(width, height);
+      var pixelData = this.generatePixelData({
+        width,
+        height,
+        colors,
+        depthMap,
+      });
+      var Canvas = require("canvas"),
+        canvas = new Canvas(width, height),
+        context = canvas.getContext("2d"),
+        imageData = context.createImageData(width, height);
+
+      imageData.data.set(pixelData);
+      context.putImageData(imageData, 0, 0);
+
+			var fs = require("fs"),
+			  out = fs.createWriteStream(__dirname + "/" + output + ".png"),
+			 	stream = canvas.pngStream();
+
+			stream.on("data", function(chunk) {
+				out.write(chunk);
+			});
+
+			stream.on("end", function() {
+				console.log("saved png to", out.path);
+			});
+    },
+
     generatePixelData: function (opts) {
 
       /*
