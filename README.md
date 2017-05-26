@@ -49,6 +49,26 @@ MagicEye.render({
 </script>
 ```
 
+## In a node script
+You can use `MagicEye` in Node to generate .png files. To do so, you must first install all the dev dependencies:
+```
+npm install canvas fs
+```
+If you don't already have canvas installed, you'll need its system dependencies as well; see https://www.npmjs.com/package/canvas.
+
+Currently, of the included depth mappers, only `TextDepthMapper` works in node.
+```javascript
+var MagicEye = require("./magiceye.js").MagicEye;
+var opts = {
+  width: 128,
+  height: 128,
+	output: "my_file",
+  text: "Hello World",
+};
+MagicEye.render(opts);
+```
+
+
 ## Depth Maps
 
 To achieve the 3D illusion, [depth maps](http://en.wikipedia.org/wiki/Depth_map) tell `MagicEye` what parts should appear closer and what parts should appear farther away. `MagicEye` understands depth maps represtented as two-dimensional arrays where each nested array represents a horizontal row of points (or pixels) in the final image. Each element in the nested arrays is a float between 0.0 and 1.0 that describes the closeness of that point, where 1 is the closest and 0 is the farthest. For example:

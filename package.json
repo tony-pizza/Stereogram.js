@@ -17,6 +17,12 @@
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-uglify": "^0.6.0",
-    "uglify-save-license": "^0.4.1"
+    "uglify-save-license": "^0.4.1",
+    "canvas": "^1.6.5",
+    "fs": "0.0.1-security"
+  },
+  "dependencies": {},
+  "scripts": {
+    "test": "node test.js"
   }
 }
