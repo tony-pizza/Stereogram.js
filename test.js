@@ -2,7 +2,7 @@ var MagicEye = require("./magiceye.js").MagicEye;
 var opts = {
   width: 128,
   height: 128,
-	output: "test_simple",
+	output: "test_output/simple",
 };
 MagicEye.render(opts);
 
@@ -11,7 +11,7 @@ var textOpts = {
   width: 800,
   height: 600,
   colors: ['0f0', '00f', 'f00', 'ff0', 'f0f', '0ff'],
-	output: "test_text",
+	output: "test_output/text",
   text: "HELLO WORLD",
 };
 MagicEye.render(textOpts);
