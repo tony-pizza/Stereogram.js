@@ -11,11 +11,6 @@ MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
     this.opts = opts;
   },
 
-  // generate: function (width, height) {
-  //   if (this.autoResize) return this.resize(this.make(width, height), width, height);
-  //   else return this.make(width, height);
-  // };
-
   make: function (width, height) {
     var canvas;
     if (this.opts.useNodeCanvas) {
