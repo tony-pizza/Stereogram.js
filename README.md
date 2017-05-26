@@ -50,7 +50,13 @@ MagicEye.render({
 ```
 
 ## In a node script
-You can use `MagicEye` in Node to generate .png files. Currently, of the included depth mappers, only `TextDepthMapper` works in node.
+You can use `MagicEye` in Node to generate .png files. To do so, you must first install all the dev dependencies:
+```
+npm install canvas fs
+```
+If you don't already have canvas installed, you'll need its system dependencies as well; see https://www.npmjs.com/package/canvas.
+
+Currently, of the included depth mappers, only `TextDepthMapper` works in node.
 ```javascript
 var MagicEye = require("./magiceye.js").MagicEye;
 var opts = {
