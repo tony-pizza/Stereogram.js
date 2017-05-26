@@ -13,9 +13,8 @@ MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
 
   make: function (width, height) {
     var canvas;
-    if (this.opts.useNodeCanvas) {
+    if (typeof window === 'undefined') {
       var Canvas = require("canvas");
-        // Image = Canvas.Image,
       canvas = new Canvas(width, height);
     } else {
       canvas = document.createElement('canvas');

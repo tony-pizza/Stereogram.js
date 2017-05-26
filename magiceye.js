@@ -55,8 +55,7 @@
         depthMap = opts.depthMap;
       } else if (opts.text) {
         require("./depthmappers/TextDepthMapper.js");
-        var depthParams = {useNodeCanvas: usingNode};
-        var depthMapper = new MagicEye.TextDepthMapper(opts.text, depthParams);
+        var depthMapper = new MagicEye.TextDepthMapper(opts.text);
         var depthMap = depthMapper.generate(width, height);
       } else if (opts.depthMapper) {
         depthMap = opts.depthMapper.generate(width, height);
@@ -107,7 +106,7 @@
       context.putImageData(imageData, 0, 0);
     },
 
-    // To create images in the context of a node script, without a browser
+    // To create images in the context of a node script without a browser
     renderToFile: function (width, height, output, pixelData) {
       var Canvas = require("canvas"),
         canvas = new Canvas(width, height),
@@ -117,17 +116,17 @@
       imageData.data.set(pixelData);
       context.putImageData(imageData, 0, 0);
 
-			var fs = require("fs"),
-			  out = fs.createWriteStream(__dirname + "/" + output + ".png"),
-			 	stream = canvas.pngStream();
+      var fs = require("fs"),
+        out = fs.createWriteStream(__dirname + "/" + output + ".png"),
+        stream = canvas.pngStream();
 
-			stream.on("data", function(chunk) {
-				out.write(chunk);
-			});
+      stream.on("data", function(chunk) {
+        out.write(chunk);
+      });
 
-			stream.on("end", function() {
-				console.log("saved png to", out.path);
-			});
+      stream.on("end", function() {
+        console.log("saved png to", out.path);
+      });
     },
 
     generatePixelData: function (opts) {
