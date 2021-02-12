@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>JPG &rarr; MagicEye</title>
+  <title>Image &rarr; MagicEye</title>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
   <meta content="MagicEye.js is a JavaScript library for generating \"Magic Eye\" images (single image random dot stereograms, or SIRDS) in the browser." name="description" />
@@ -20,12 +20,16 @@
       max-width: 100%;
       height: auto;
       margin: 0 auto;
+      display: none;
+    }
+    #magic-eye[src] {
+      display: block;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>JPG &rarr; Magic Eye</h2>
+    <h1>Image &rarr; Magic Eye</h2>
     <div>
       <span>by Ian Pearce</span>
       &bull; 
@@ -34,11 +38,11 @@
   </header>
   <section>
     <canvas id="canvas-preview" style="display: none;"></canvas>
-    <input id="file-input" type="file" accept="image/jpeg">
-    <img id="magic-eye" style="display: none;" src />
+    <input id="file-input" type="file" accept="image/*">
+    <img id="magic-eye"/>
     <div class="buttons">
 
-      <label for="file-input" class="button">Choose Image (JPG Only!)</label>
+      <label for="file-input" class="button">Choose Image</label>
       <button id="change-colors">Change Colors</button>
       <button id="black-and-white">Black and White</button>
 
@@ -54,19 +58,9 @@
       <a href="examples/trike.jpg">Check out this example of a tricycle.</a>
     </p>
     <p>
-      Only JPG files work for now! And even then, some JPGs might not work. If you're having issues try running your image through a JPG converter <a href="http://image.online-convert.com/convert-to-jpg">like this one</a>.
-    </p>
-    <p>
       There's no server, so your images don't actually get uploaded anywhere.
     </p>
     <hr></hr>
-    <h2>
-      Why only JPG?
-    </h2>
-    <p>
-      As a cross-origin security feature, HTML5 canvas doesn't let you read its pixel data once you've dirtied it with an image from outside the current domain.
-      In order to read an image's pixel data in the browser without canvas we're using <a href="https://github.com/notmasteryet/jpgjs">jpgjs</a>, a JavaScript JPG decoder by <a href="https://github.com/notmasteryet">@notmasteryet</a>.
-    </p>
   </section>
   <footer>
     <span>Ian Pearce</span>
@@ -76,40 +70,28 @@
 
   <script type="text/javascript" src="magiceye.js"></script>
   <script type="text/javascript" src="depthmappers/CanvasDepthMapper.js"></script>
-  <script type="text/javascript" src="https://notmasteryet.github.io/jpgjs/jpg.js"></script>
 
   <script>
     (function() {
 
       var blackAndWhite = false;
-      var input = document.querySelector('input#file-input');
+      var input = document.querySelector('input#file-input');
 
       input.addEventListener('change', function () {
 
-        var magiceye = document.querySelector('img#magic-eye');
+        var magiceye = document.querySelector('img#magic-eye');
         var canvas   = document.querySelector('canvas#canvas-preview');
-        var file     = input.files[0];
-        var reader   = new FileReader();
-        
-        reader.addEventListener("load", function () {
-          var jpg = new JpegImage();
-          jpg.onload = function () {
-            magiceye.width = canvas.width = jpg.width;
-            magiceye.height = canvas.height = jpg.height;
-            var ctx = canvas.getContext("2d");
-            var data = ctx.getImageData(0, 0, jpg.width, jpg.height);
-            jpg.copyToImageData(data);
-            ctx.putImageData(data, 0, 0);
-            renderMagicEye();
-            magiceye.style.display = 'block';
-          };
-          jpg.load(reader.result);
-        }, false);
-
-        if (file) {
-          reader.readAsDataURL(file);
-        }
-        
+        var file     = input.files[0];
+        var url      = URL.createObjectURL(file);
+        var img      = new Image();
+        img.onload = function () {
+          magiceye.width = canvas.width = img.width;
+          magiceye.height = canvas.height = img.height;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          renderMagicEye();
+        };
+        img.src = url;
       });
 
       function renderMagicEye() {
