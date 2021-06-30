@@ -1,7 +1,7 @@
 //
 // Parses an <img>'s pixel data and generates a depth map
 //
-MagicEye.ImgDepthMapper = MagicEye.DepthMapper.extend({
+Stereogram.ImgDepthMapper = Stereogram.DepthMapper.extend({
 
   constructor: function (img) {
     this.img = img;

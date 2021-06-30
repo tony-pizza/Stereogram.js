@@ -32,7 +32,7 @@
  *
  */
 
-MagicEye.TemplateDepthMapper = MagicEye.DepthMapper.extend({
+Stereogram.TemplateDepthMapper = Stereogram.DepthMapper.extend({
 
   constructor: function (template) {
     this.template = template;
@@ -95,10 +95,10 @@ MagicEye.TemplateDepthMapper = MagicEye.DepthMapper.extend({
         }
 
       } else {
-        throw('MagicEye: invalid depth map template format');
+        throw('Stereogram: invalid depth map template format');
       }
     } else {
-      throw('MagicEye: invalid depth map template format');
+      throw('Stereogram: invalid depth map template format');
     }
 
     return template;

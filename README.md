@@ -1,72 +1,72 @@
-MagicEye.js
+Stereogram.js
 ===========
 
-MagicEye.js is a JavaScript library for generating "Magic Eye" images (technically single image random dot stereograms, or [SIRDS](http://en.wikipedia.org/wiki/Autostereogram#Random-dot)) in the browser.
+Stereogram.js is a JavaScript library for generating stereogram images (technically, [SIRDS](http://en.wikipedia.org/wiki/Autostereogram#Random-dot)) in the browser. Stereograms were popularized in books by [Magic Eye&trade;](https://www.magiceye.com/).
 
-View the demo: [http://peeinears.github.io/MagicEye.js](http://peeinears.github.io/MagicEye.js/)
+View the demo: [http://peeinears.github.io/Stereogram.js](http://peeinears.github.io/Stereogram.js/)
 
 Or check out these other demos:
- - [Text to Magic Eye](http://peeinears.github.io/MagicEye.js/text-to-magiceye.html)
- - [JPG to Magic Eye](http://peeinears.github.io/MagicEye.js/jpg-to-magiceye.html)
+ - [Text to Stereogram](http://peeinears.github.io/Stereogram.js/text-to-stereogram.html)
+ - [JPG to Stereogram](http://peeinears.github.io/Stereogram.js/jpg-to-stereogram.html)
   
 ## Usage
 
-Require `magiceye.js` and also a `DepthMapper`. Here we're using the `TextDepthMapper`, which generates depth maps of given text. (More on `DepthMapper`s below.)
+Require `stereogram.js` and also a `DepthMapper`. Here we're using the `TextDepthMapper`, which generates depth maps of given text. (More on `DepthMapper`s below.)
 
 ```html
-<script src="magiceye.js" type="text/javascript"></script>
+<script src="stereogram.js" type="text/javascript"></script>
 <script src="TextDepthMapper.js" type="text/javascript"></script>
 ```
 
 Put an `<img>` or `<canvas>` on the page. Give it an `id` and set a `height` and `width`. Note: `<img>`s should always have a `src` attribute, even if it's empty.
 
 ```html
-<img id="magic-eye" width="500" height="400" src />
+<img id="stereogram" width="500" height="400" src />
 ```
 
-Tell `MagicEye` to generate a magic eye based on the depth map created by `TextDepthMapper` and render it to your `<img>`.
+Tell `Stereogram` to generate a stereogram based on the depth map created by `TextDepthMapper` and render it to your `<img>`.
 
 ```javascript
-MagicEye.render({
-  el: 'magic-eye',
-  depthMapper: new MagicEye.TextDepthMapper("Hello World")
+Stereogram.render({
+  el: 'stereogram',
+  depthMapper: new Stereogram.TextDepthMapper("Hello World")
 });
 ```
 
 #### All together now...
 
 ```html
-<script src="magiceye.js" type="text/javascript"></script>
+<script src="stereogram.js" type="text/javascript"></script>
 <script src="TextDepthMapper.js" type="text/javascript"></script>
 
-<img id="magic-eye" width="500" height="400" src />
+<img id="stereogram" width="500" height="400" src />
 
 <script>
-MagicEye.render({
-  el: 'magic-eye',
-  depthMapper: new MagicEye.TextDepthMapper("Hello World")
+Stereogram.render({
+  el: 'stereogram',
+  depthMapper: new Stereogram.TextDepthMapper("Hello World")
 });
 </script>
 ```
 
 ## Depth Maps
 
-To achieve the 3D illusion, [depth maps](http://en.wikipedia.org/wiki/Depth_map) tell `MagicEye` what parts should appear closer and what parts should appear farther away. `MagicEye` understands depth maps represtented as two-dimensional arrays where each nested array represents a horizontal row of points (or pixels) in the final image. Each element in the nested arrays is a float between 0.0 and 1.0 that describes the closeness of that point, where 1 is the closest and 0 is the farthest. For example:
+To achieve the 3D illusion, [depth maps](http://en.wikipedia.org/wiki/Depth_map) tell `Stereogram` what parts should appear closer and what parts should appear farther away. `Stereogram` understands depth maps represtented as two-dimensional arrays where each nested array represents a horizontal row of points (or pixels) in the final image. Each element in the nested arrays is a float between 0.0 and 1.0 that describes the closeness of that point, where 1 is the closest and 0 is the farthest. For example:
 
     [[0.0, 0.0, 0.0], //
      [0.0, 1.0, 0.0], // a centered floating square
      [0.0, 0.0, 0.0]] //
      
-If you have a depth map of the correct size, you can pass it in directly via `MagicEye.render()`s `depthMap` option. That route is uncommon, though, because depth maps are a pain to write by hand. This is where _DepthMappers_ come in handy.
+If you have a depth map of the correct size, you can pass it in directly via `Stereogram.render()`s `depthMap` option. That route is uncommon, though, because depth maps are a pain to write by hand. This is where _DepthMappers_ come in handy.
 
 ## DepthMappers
 
-DepthMappers are tools for easily generating depth maps sized and formatted for `MagicEye`. For example, the TextDepthMapper generates a depth map where a given string of text appears hovering above the background, centered and sized to fit the image.
+DepthMappers are tools for easily generating depth maps sized and formatted for `Stereogram`. For example, the TextDepthMapper generates a depth map where a given string of text appears hovering above the background, centered and sized to fit the image.
 
 Call `generate(width, height)` on an instance of DepthMapper to manually generate a depth map.
 
 ```javascript
-var depthMapper = new MagicEye.DepthMapper(...);
+var depthMapper = new Stereogram.DepthMapper(...);
 var depthMap = depthMapper.generate(500, 400);
 ```
 
@@ -96,7 +96,7 @@ new CanvasDepthMapper(canvas);
 
 #### ImgDepthMapper
 
-Generate depth maps by parsing pixel values of an `<img>`. This basically let's you convert a black and white depth map image to a depth map for `MagicEye`.
+Generate depth maps by parsing pixel values of an `<img>`. This basically let's you convert a black and white depth map image to a depth map for `Stereogram`.
 
 ```html
 <img id="my-img" src="depthmap.jpg" />
@@ -112,7 +112,7 @@ Generate full-scale depth maps from smaller hand-made templates.
 
 ##### Formats
 
-These each create a floating box at the center of the `MagicEye`:
+These each create a floating box at the center of the `Stereogram`:
 
 ```javascript
 var myDepthMap = ["   ",
@@ -147,7 +147,7 @@ var myDepthMap = [[0.0, 0.0, 0.3],
 ##### Example
 
 ```javascript
-magicEye.depthMap = [
+myStereogram.depthMap = [
   "                                 ",
   "                                 ",
   "                                 ",
@@ -169,7 +169,7 @@ magicEye.depthMap = [
 Extend depth mapper and define your own `constructor()` and `make()` methods.
 
 ```javascript
-var MyDepthMapper = MagicEye.DepthMapper.extend({
+var MyDepthMapper = Stereogram.DepthMapper.extend({
 
   // If true or left out your DepthMapper will automatically resize
   //  the depth map generated in `make()` to the correct dimensions.
@@ -193,7 +193,7 @@ var MyDepthMapper = MagicEye.DepthMapper.extend({
 Use it!
 
 ```javascript
-MagicEye.render({ el: 'my-magic-eye', depthMapper: new MyDepthMapper(...) });
+Stereogram.render({ el: 'my-stereogram', depthMapper: new MyDepthMapper(...) });
 ```
 
 ## Other Stuff...
@@ -212,7 +212,7 @@ IEEE in 1994. The authors explain the algorithm in detail.
 
 ### Disclaimer
 
-This project is in no way affiliated with Magic Eye Inc. I just liked the name.
+This project is in no way affiliated with [Magic Eye Inc.](http://www.magiceye.com)
 
 ### Author
 

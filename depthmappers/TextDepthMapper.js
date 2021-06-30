@@ -1,7 +1,7 @@
 //
 // Generates depth map from text
 //
-MagicEye.TextDepthMapper = MagicEye.DepthMapper.extend({
+Stereogram.TextDepthMapper = Stereogram.DepthMapper.extend({
 
   constructor: function (text, opts) {
     this.text = text;
