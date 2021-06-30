@@ -1,11 +1,11 @@
 <!doctype html>
 <html>
 <head>
-  <title>JPG &rarr; MagicEye</title>
+  <title>JPG &rarr; Stereogram</title>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
-  <meta content="MagicEye.js is a JavaScript library for generating \"Magic Eye\" images (single image random dot stereograms, or SIRDS) in the browser." name="description" />
-  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, autostereogram, SIRDS" name="keywords" />
+  <meta content="Stereogram.js is a JavaScript library for generating stereogram images (popularized by Magic Eye) in the browser." name="description" />
+  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, stereogram.js, autostereogram, SIRDS" name="keywords" />
   <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700italic,700' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'>
   <link href="assets/styles.css" media="all" rel="stylesheet" type="text/css" />
@@ -16,7 +16,7 @@
       height: 0;
     }
 
-    #magic-eye {
+    #stereogram {
       max-width: 100%;
       height: auto;
       margin: 0 auto;
@@ -25,17 +25,17 @@
 </head>
 <body>
   <header>
-    <h1>JPG &rarr; Magic Eye</h2>
+    <h1>JPG &rarr; Stereogram</h2>
     <div>
       <span>by Ian Pearce</span>
       &bull; 
-      <a href="https://github.com/peeinears/MagicEye.js">Fork on Github</a>
+      <a href="https://github.com/peeinears/Stereogram.js">Fork on Github</a>
     </div>
   </header>
   <section>
     <canvas id="canvas-preview" style="display: none;"></canvas>
     <input id="file-input" type="file" accept="image/jpeg">
-    <img id="magic-eye" style="display: none;" src />
+    <img id="stereogram" style="display: none;" src />
     <div class="buttons">
 
       <label for="file-input" class="button">Choose Image (JPG Only!)</label>
@@ -47,7 +47,7 @@
   <section>
     <hr></hr>
     <p>
-      This page lets you convert your own depth map images into Magic Eyes.
+      This page lets you convert your own depth map images into stereograms.
     </p>
     <p>
       Your image should be black and white (greyscale). The lighter a region is, the closer it will appear.
@@ -71,10 +71,10 @@
   <footer>
     <span>Ian Pearce</span>
     &bull; 
-    <a href="https://github.com/peeinears/MagicEye.js">Github</a>
+    <a href="https://github.com/peeinears/Stereogram.js">Github</a>
   </footer>
 
-  <script type="text/javascript" src="magiceye.js"></script>
+  <script type="text/javascript" src="stereogram.js"></script>
   <script type="text/javascript" src="depthmappers/CanvasDepthMapper.js"></script>
   <script type="text/javascript" src="https://notmasteryet.github.io/jpgjs/jpg.js"></script>
 
@@ -86,7 +86,7 @@
 
       input.addEventListener('change', function () {
 
-        var magiceye = document.querySelector('img#magic-eye');
+        var stereogram = document.querySelector('img#stereogram');
         var canvas   = document.querySelector('canvas#canvas-preview');
         var file     = input.files[0];
         var reader   = new FileReader();
@@ -94,14 +94,14 @@
         reader.addEventListener("load", function () {
           var jpg = new JpegImage();
           jpg.onload = function () {
-            magiceye.width = canvas.width = jpg.width;
-            magiceye.height = canvas.height = jpg.height;
+            stereogram.width = canvas.width = jpg.width;
+            stereogram.height = canvas.height = jpg.height;
             var ctx = canvas.getContext("2d");
             var data = ctx.getImageData(0, 0, jpg.width, jpg.height);
             jpg.copyToImageData(data);
             ctx.putImageData(data, 0, 0);
-            renderMagicEye();
-            magiceye.style.display = 'block';
+            renderStereogram();
+            stereogram.style.display = 'block';
           };
           jpg.load(reader.result);
         }, false);
@@ -112,23 +112,23 @@
         
       });
 
-      function renderMagicEye() {
+      function renderStereogram() {
         var canvas = document.querySelector('canvas#canvas-preview');
-        MagicEye.render({
-          el: 'magic-eye',
+        Stereogram.render({
+          el: 'stereogram',
           colors: blackAndWhite ? [[0, 0, 0, 255], [255, 255, 255, 255]] : generatePalette(10),
-          depthMapper: new MagicEye.CanvasDepthMapper(canvas, { inverted: false })
+          depthMapper: new Stereogram.CanvasDepthMapper(canvas, { inverted: false })
         });
       }
 
       document.getElementById('change-colors').onclick = function () {
         blackAndWhite = false;
-        renderMagicEye();
+        renderStereogram();
       };
 
       document.getElementById('black-and-white').onclick = function () {
         blackAndWhite = true;
-        renderMagicEye();
+        renderStereogram();
       };
 
       function randomRGBa() {

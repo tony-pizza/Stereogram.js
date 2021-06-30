@@ -1,27 +1,27 @@
 <!doctype html>
 <html>
 <head>
-  <title>MagicEye.js</title>
+  <title>Stereogram.js</title>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
-  <meta content="MagicEye.js is a JavaScript library for generating \"Magic Eye\" images (single image random dot stereograms, or SIRDS) in the browser." name="description" />
-  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, autostereogram, SIRDS" name="keywords" />
+  <meta content="Stereogram.js is a JavaScript library for generating stereogram images (popularized by Magic Eye) in the browser." name="description" />
+  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, stereogram.js, autostereogram, SIRDS" name="keywords" />
   <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700italic,700' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'>
   <link href="assets/styles.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 <body>
   <header>
-    <h1>MagicEye.js</h2>
+    <h1>Stereogram.js</h2>
     <div>
       <span>by Ian Pearce</span>
       &bull; 
-      <a href="https://github.com/peeinears/MagicEye.js">Fork on Github</a>
+      <a href="https://github.com/peeinears/Stereogram.js">Fork on Github</a>
     </div>
   </header>
   <section>
     <canvas id="canvas" width="1000" height="600">Sorry, your browser doesn't support HTML5 Canvas!</canvas>
-    <img id="magiceye" width="1000" height="600" style="display: none;" src />
+    <img id="stereogram" width="1000" height="600" style="display: none;" src />
     <div class="buttons">
 
       <form name="brush" style="display: none;">
@@ -50,7 +50,7 @@
 
       <div class="clearfix"></div>
 
-      <button id="show-magiceye">Show Magic Eye</button>
+      <button id="show-stereogram">Show Stereogram</button>
       <button id="show-canvas">Show Depth Map</button>
       <button id="redraw">Redraw Shapes</button>
       <button id="draw-mode">Draw Your Own!</button>
@@ -62,33 +62,33 @@
   <section>
     <hr></hr>
     <p>
-      <a href="https://github.com/peeinears/MagicEye.js">MagicEye.js</a> is a JavaScript library for generating "Magic Eye" images in the browser. Technically, it generates single-image random dot stereograms, or SIRDS.
+      <a href="https://github.com/peeinears/Stereogram.js">Stereogram.js</a> is a JavaScript library for generating stereogram images (popularized by Magic Eye&trade;) in the browser.
     </p>
     <p>
-      In the above example, pixel values from an HTML5 Canvas are turned into depth data, which are then used to generate a Magic Eye image. The code looks something like this:
+      In the above example, pixel values from an HTML5 Canvas are turned into depth data, which are then used to generate a stereogram image. The code looks something like this:
     </p>
     <pre>var canvas = document.getElementById('canvas');
-MagicEye.render({
-  el: 'magiceye',
-  depthMapper: new MagicEye.CanvasDepthMapper(canvas)
+Stereogram.render({
+  el: 'stereogram',
+  depthMapper: new Stereogram.CanvasDepthMapper(canvas)
 });</pre>
     <p>
-      More info about MagicEye.js and how to use it can be found on <a href="https://github.com/peeinears/MagicEye.js">Github</a>.
+      More info about Stereogram.js and how to use it can be found on <a href="https://github.com/peeinears/Stereogram.js">Github</a>.
     </p>
     <p>Fork and enjoy!</p>
     <hr></hr>
     <h2>More demos:</h2>
     <p>
-      <a href="text-to-magiceye.html">Text to Magic Eye</a> and <a href="jpg-to-magiceye.html">JPG to Magic Eye</a>
+      <a href="text-to-stereogram.html">Text to Stereogram</a> and <a href="jpg-to-stereogram.html">JPG to Stereogram</a>
     </p>
   </section>
   <footer>
     <span>Ian Pearce</span>
     &bull; 
-    <a href="https://github.com/peeinears/MagicEye.js">Github</a>
+    <a href="https://github.com/peeinears/Stereogram.js">Github</a>
   </footer>
 
-  <script type="text/javascript" src="magiceye.js"></script>
+  <script type="text/javascript" src="stereogram.js"></script>
   <script type="text/javascript" src="depthmappers/CanvasDepthMapper.js"></script>
 
   <script>
@@ -96,39 +96,39 @@ MagicEye.render({
 
       var canvas = document.getElementById("canvas"),
           context = this.canvas.getContext("2d"),
-          magicEye = document.getElementById("magiceye"),
+          stereogram = document.getElementById("stereogram"),
           drawMode = false,
-          showingMagicEye = false;
+          showingStereogram = false;
 
       window.addEventListener('resize', resize, false);
 
-      document.getElementById('show-magiceye').onclick = function () {
-        renderMagicEye();
+      document.getElementById('show-stereogram').onclick = function () {
+        renderStereogram();
         canvas.style.display = 'none';
-        magicEye.style.display = 'block';
-        document.getElementById('show-magiceye').style.display = 'none';
+        stereogram.style.display = 'block';
+        document.getElementById('show-stereogram').style.display = 'none';
         document.getElementById('show-canvas').style.display = 'inline';
-        showingMagicEye = true;
+        showingStereogram = true;
       };
 
       document.getElementById('show-canvas').onclick = function () {
-        magicEye.style.display = 'none';
+        stereogram.style.display = 'none';
         canvas.style.display = 'block';
-        document.getElementById('show-magiceye').style.display = 'inline';
+        document.getElementById('show-stereogram').style.display = 'inline';
         document.getElementById('show-canvas').style.display = 'none';
-        showingMagicEye = false;
+        showingStereogram = false;
       };
 
       document.getElementById('redraw').onclick = function () {
         redraw();
-        if (showingMagicEye) {
-          renderMagicEye();
+        if (showingStereogram) {
+          renderStereogram();
         }
       };
 
       document.getElementById('clear').onclick = function () {
         clear();
-        if (showingMagicEye) {
+        if (showingStereogram) {
           document.getElementById('show-canvas').click();
         }
       };
@@ -157,11 +157,11 @@ MagicEye.render({
         return val;
       }
 
-      function renderMagicEye() {
-        MagicEye.render({
-          el: 'magiceye',
+      function renderStereogram() {
+        Stereogram.render({
+          el: 'stereogram',
           colors: generatePalette(10),
-          depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('canvas'))
+          depthMapper: new Stereogram.CanvasDepthMapper(document.getElementById('canvas'))
         });
       }
 
@@ -206,7 +206,7 @@ MagicEye.render({
       }
     
       function resize() {
-        magicEye.width = canvas.width = window.innerWidth > 1000 ? 1000 : window.innerWidth;
+        stereogram.width = canvas.width = window.innerWidth > 1000 ? 1000 : window.innerWidth;
         redraw();
       }
 
@@ -236,7 +236,7 @@ MagicEye.render({
         document.brush.style.display = 'none';
         document.getElementById('draw-mode').style.display = 'inline';
         redraw();
-        document.getElementById('show-magiceye').click();
+        document.getElementById('show-stereogram').click();
       }
 
       var px, py,
@@ -297,7 +297,7 @@ MagicEye.render({
 
       document.brush.size[2].click();
       document.brush.value[4].click();
-      document.getElementById('show-magiceye').click();
+      document.getElementById('show-stereogram').click();
 
     })();
   </script>

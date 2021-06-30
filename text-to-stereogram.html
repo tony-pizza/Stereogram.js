@@ -1,16 +1,16 @@
 <!doctype html>
 <html>
 <head>
-  <title>Text &rarr; MagicEye.js</title>
+  <title>Text &rarr; Stereogram</title>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
-  <meta content="MagicEye.js is a JavaScript library for generating \"Magic Eye\" images (single image random dot stereograms, or SIRDS) in the browser." name="description" />
-  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, autostereogram, SIRDS" name="keywords" />
+  <meta content="Stereogram.js is a JavaScript library for generating stereogram images (popularized by Magic Eye) in the browser." name="description" />
+  <meta content="Magic Eye, MagicEye, javascript, js, magiceye.js, stereogram, stereogram.js, autostereogram, SIRDS" name="keywords" />
   <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700italic,700' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'>
   <link href="assets/styles.css" media="all" rel="stylesheet" type="text/css" />
   <style>
-    #magic-eye {
+    #stereogram {
       max-width: 100%;
       height: auto;
       margin: 0 auto;
@@ -24,15 +24,15 @@
 </head>
 <body>
   <header>
-    <h1>Text &rarr; Magic Eye</h2>
+    <h1>Text &rarr; Stereogram</h2>
     <div>
       <span>by Ian Pearce</span>
       &bull; 
-      <a href="https://github.com/peeinears/MagicEye.js">Fork on Github</a>
+      <a href="https://github.com/peeinears/Stereogram.js">Fork on Github</a>
     </div>
   </header>
   <section>
-    <img id="magiceye" src />
+    <img id="stereogram" src width="1000" height="600" />
     <div class="buttons">
 
       <form id="text-form">
@@ -45,7 +45,7 @@
   <section>
     <hr></hr>
     <p>
-      This page lets you easily generate Magic Eyes that display floating text.
+      This page lets you easily generate stereograms that display floating text.
     </p>
     <p>
       There are no options to stylize or customize at the moment.
@@ -58,10 +58,10 @@
   <footer>
     <span>Ian Pearce</span>
     &bull; 
-    <a href="https://github.com/peeinears/MagicEye.js">Github</a>
+    <a href="https://github.com/peeinears/Stereogram.js">Github</a>
   </footer>
 
-  <script type="text/javascript" src="magiceye.js"></script>
+  <script type="text/javascript" src="stereogram.js"></script>
   <script type="text/javascript" src="depthmappers/TextDepthMapper.js"></script>
 
   <script>
@@ -70,14 +70,14 @@
       document.querySelector('form#text-form').addEventListener('submit', function (e) {
         e.preventDefault();
         var text = document.querySelector('input#text-input').value;
-        renderMagicEye(text);
+        renderStereogram(text);
       });
 
-      function renderMagicEye(text) {
-        MagicEye.render({
-          el: 'magiceye',
+      function renderStereogram(text) {
+        Stereogram.render({
+          el: 'stereogram',
           colors: generatePalette(10),
-          depthMapper: new MagicEye.TextDepthMapper(text, { textAlign: 'center' })
+          depthMapper: new Stereogram.TextDepthMapper(text, { textAlign: 'center' })
         });
       }
 
@@ -96,7 +96,7 @@
         return palette;
       }
 
-      renderMagicEye('hey sup');
+      renderStereogram('hey sup');
 
     })();
   </script>
