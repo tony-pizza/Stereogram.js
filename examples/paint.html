@@ -2,7 +2,7 @@
 <html>
   <head>
 
-    <title>magiceye.js</title>
+    <title>Stereogram.js</title>
 
     <style type="text/css">
 
@@ -38,7 +38,7 @@
 
     </style>
 
-    <script type="text/javascript" src="../magiceye.js"></script>
+    <script type="text/javascript" src="../stereogram.js"></script>
     <script type="text/javascript" src="../depthmappers/TemplateDepthMapper.js"></script>
     <script type="text/javascript" src="../depthmappers/ImgDepthMapper.js"></script>
     <script type="text/javascript" src="../depthmappers/CanvasDepthMapper.js"></script>
@@ -114,31 +114,27 @@
             self.drawing = false;
           };
 
-          MagicEye.render({
+          Stereogram.render({
             el: 'bmp',
             // width: 700,
             // height: 500,
             colors: ['0f0', '00f', 'f00', 'ff0', 'f0f', '0ff'],
-            depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('paint'))
+            depthMapper: new Stereogram.CanvasDepthMapper(document.getElementById('paint'))
           });
 
           document.getElementById("render").onclick = function () {
-            MagicEye.render({
+            Stereogram.render({
               el: 'bmp',
               width: 700,
               height: 500,
               colors: ['0f0', '00f', 'f00', 'ff0', 'f0f', '0ff'],
-              depthMapper: new MagicEye.CanvasDepthMapper(document.getElementById('paint'))
+              depthMapper: new Stereogram.CanvasDepthMapper(document.getElementById('paint'))
             });
           };
 
           document.getElementById("clear").onclick = function () {
             self.context.fillStyle = "#000000";
             self.context.fillRect(0, 0, self.canvas.width, self.canvas.height);
-          };
-
-          document.getElementById("regenerate-palette").onclick = function () {
-            self.magicEye.regeneratePalette().render();
           };
 
           document.getElementById("load-image").onclick = function () {
@@ -173,7 +169,7 @@
 
     <div id="main">
 
-      <h1>Magic Eye Painter</h1>
+      <h1>Stereogram Painter</h1>
       <hr>
       <h4>Draw your own depth maps and render them as autostereograms. The lighter it is, the closer it will appear.</h4>
 
@@ -202,15 +198,14 @@
       </div>
 
       <canvas id="paint" width="700" height="500"></canvas>
-      <button id="render">Generate Magic Eye</button>
-      <button id="regenerate-palette">Regenerate color palette</button>
+      <button id="render">Generate Stereogram</button>
       <button id="load-image">Load image (trike.jpg)</button>
       <button id="clear">Clear</button>
       <hr>
       <img id="bmp" width="700" height="500" src />
       <hr>
       <a href="http://ianpearce.org/">Ian Pearce, 2012</a>
-      <a href="https://github.com/peeinears/MagicEye.js" style="float: right">MagicEye.js on Github</a>
+      <a href="https://github.com/peeinears/Stereogram.js" style="float: right">Stereogram.js on Github</a>
     </div>
 
   </body>

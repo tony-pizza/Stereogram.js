@@ -10,8 +10,8 @@ module.exports = function (grunt) {
         options: {
           preserveComments: saveLicense
         },    
-        src: ['magiceye.js'],
-        dest: 'magiceye.min.js' 
+        src: ['stereogram.js'],
+        dest: 'stereogram.min.js' 
       }
     }
   });

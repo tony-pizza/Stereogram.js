@@ -1,7 +1,7 @@
 //
 // Parses a <canvas>'s pixel data and generates a depth map
 //
-MagicEye.CanvasDepthMapper = MagicEye.DepthMapper.extend({
+Stereogram.CanvasDepthMapper = Stereogram.DepthMapper.extend({
 
   constructor: function (canvas, opts) {
     opts = opts || {};
