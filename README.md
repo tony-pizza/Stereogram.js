@@ -3,11 +3,11 @@ Stereogram.js
 
 Stereogram.js is a JavaScript library for generating stereogram images (technically, [SIRDS](http://en.wikipedia.org/wiki/Autostereogram#Random-dot)) in the browser. Stereograms were popularized in books by [Magic Eye&trade;](https://www.magiceye.com/).
 
-View the demo: [http://peeinears.github.io/Stereogram.js](http://peeinears.github.io/Stereogram.js/)
+View the demo: [https://tony-pizza.github.io/Stereogram.js](http://tony-pizza.github.io/Stereogram.js/)
 
 Or check out these other demos:
- - [Text to Stereogram](http://peeinears.github.io/Stereogram.js/text-to-stereogram.html)
- - [JPG to Stereogram](http://peeinears.github.io/Stereogram.js/jpg-to-stereogram.html)
+ - [Text to Stereogram](http://tony-pizza.github.io/Stereogram.js/text-to-stereogram.html)
+ - [JPG to Stereogram](http://tony-pizza.github.io/Stereogram.js/jpg-to-stereogram.html)
   
 ## Usage
 
@@ -216,7 +216,7 @@ This project is in no way affiliated with [Magic Eye Inc.](http://www.magiceye.c
 
 ### Author
 
-[Ian Pearce](http://ianpearce.org) / [@peeinears](https://github.com/peeinears)
+[Ian Pearce](http://ianpearce.org) / [@tony-pizza](https://github.com/tony-pizza)
 
 ### License
 
