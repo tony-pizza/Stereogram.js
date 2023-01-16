@@ -3,8 +3,9 @@
 //
 Stereogram.ImgDepthMapper = Stereogram.DepthMapper.extend({
 
-  constructor: function (img) {
+  constructor: function (img, invert) {
     this.img = img;
+    this.invert = invert;
   },
 
   make: function () {
@@ -30,7 +31,10 @@ Stereogram.ImgDepthMapper = Stereogram.DepthMapper.extend({
       offset = width * y * 4;
       for (x = 0; x < width; x++) {
         // assume grayscale (R, G, and B are equal)
-        depthMap[y][x] = pixelData[offset + (x * 4)];
+        depthMap[y][x] = pixelData[offset + (x * 4)]/255;
+        if (this.invert === true) {
+          depthMap[y][x] = 1 - depthMap[y][x];
+        }
       }
     }
     return depthMap;
