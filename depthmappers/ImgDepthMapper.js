@@ -15,7 +15,7 @@ Stereogram.ImgDepthMapper = Stereogram.DepthMapper.extend({
     canvas.width = this.img.width;
     canvas.height = this.img.height;
     context.drawImage(this.img, 0, 0, canvas.width, canvas.height);
-    this.depthMapFromCanvas(canvas);
+    return this.depthMapFromCanvas(canvas);
   },
 
   depthMapFromCanvas: function (canvas) {
