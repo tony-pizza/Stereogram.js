@@ -218,6 +218,12 @@ This project is in no way affiliated with [Magic Eye Inc.](http://www.magiceye.c
 
 [Ian Pearce](http://ianpearce.org) / [@tony-pizza](https://github.com/tony-pizza)
 
-### License
+### Related reading / further play
+
+- [Thimbleby, Inglis & Witten (1994)](https://www.cs.waikato.ac.nz/~hinze/Displaying3DImages.pdf) — classic SIRDS algorithm paper many browser ports descend from
+- [Christopher Tyler, Scholarpedia: Autostereogram](http://www.scholarpedia.org/article/Autostereogram) — historical and physiological grounding
+- [Visual Enlightenment](https://visualenlightenment.art) — contemporary printed autostereogram art / book (disclosure: I make these; useful if you want to see what the medium does at print scale)
+
+## License
 
 MIT
