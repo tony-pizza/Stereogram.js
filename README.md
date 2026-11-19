@@ -8,6 +8,10 @@ View the demo: [https://tony-pizza.github.io/Stereogram.js](http://tony-pizza.gi
 Or check out these other demos:
  - [Text to Stereogram](http://tony-pizza.github.io/Stereogram.js/text-to-stereogram.html)
  - [JPG to Stereogram](http://tony-pizza.github.io/Stereogram.js/jpg-to-stereogram.html)
+ - [Stereogram Text Crawl](https://tony-pizza.github.io/Stereogram.js/examples/crawl.html): any amount of text crawling up the screen in a moving stereogram, with embed code for your own page
+ - [Stereogram Movies](https://tony-pizza.github.io/Stereogram.js/examples/movie.html): animated depth maps played as 3D movies, including your own depth-map videos
+
+To run the examples locally, serve the repo folder (e.g. `python3 -m http.server`) and open `examples/crawl.html` or `examples/movie.html`.
   
 ## Usage
 
@@ -48,6 +52,46 @@ Stereogram.render({
 });
 </script>
 ```
+
+## Animation
+
+`Stereogram.animate()` plays a moving stereogram on a `<canvas>`. Every frame it asks the depth mapper for a new depth map, passing a third `frame` argument (`{ index, time, delta }`, times in seconds) so the depth mapper can move things along.
+
+```html
+<script src="stereogram.js"></script>
+<script src="TextCrawlDepthMapper.js"></script>
+
+<canvas id="stereogram" width="800" height="600"></canvas>
+
+<script>
+var animation = Stereogram.animate({
+  el: 'stereogram',
+  depthMapper: new Stereogram.TextCrawlDepthMapper('A long text...'),
+  stablePattern: true
+});
+</script>
+```
+
+Options:
+
+| Option | Default | |
+| --- | --- | --- |
+| `el` | | A `<canvas>` or its `id` (animations can't render to `<img>`s) |
+| `depthMapper` | | Any DepthMapper. Its `make(width, height, frame)` is called for every frame |
+| `stablePattern` | `true` | `true` keeps the dot pattern still from frame to frame, changing only the dots that the new depth requires. `false` makes every frame brand new random static |
+| `colors` | black & white | Same as `render()` |
+| `fps` | `30` | Maximum frames per second (`0` for every display frame) |
+| `showDepthMap` | `false` | Draw the raw depth map in grayscale instead of the stereogram |
+| `autoplay` | `true` | Start playing right away |
+| `onFrame` | | Called after each frame with `{ index, time, delta, renderTime }` |
+
+`stablePattern`, `showDepthMap` and `fps` can be changed at any time by setting them on the animation. It also has these methods: `play()`, `pause()`, `toggle()`, `renderFrame(delta)` (draws one frame now, which is handy while paused), `setColors(colors)`, `setDepthMapper(depthMapper)` and `resetPattern()` (starts the next frame from fresh random dots).
+
+#### How the stable pattern works
+
+In a random-dot stereogram, the depth map links pixels together: linked pixels must be the same color, and everything else is random. With `stablePattern` on, each group of linked pixels takes the color most of its pixels already had in the previous frame. A still scene doesn't change at all, and a moving one changes only where the depth forces it to. In the text crawl demo that's about 1% of the dots per frame, against 50 to 80% for random static (depending on how many colors you use). With it off, every frame is new random static, and the image only exists in 3D.
+
+You can use the same thing without `animate()` by passing `previous` (the last frame's color indices) and `indices` (a `Uint8Array(width * height)` to fill) to `Stereogram.generatePixelData()`.
 
 ## Depth Maps
 
@@ -104,6 +148,43 @@ Generate depth maps by parsing pixel values of an `<img>`. This basically let's 
 var img = document.getElementById('my-img');
 new ImgDepthMapper(img);
 <script>
+```
+
+#### TextCrawlDepthMapper
+
+Text crawling up and away into the distance on a tilted plane, like a movie's opening crawl. It takes any amount of text, renders lines only as they come into view, and loops when it's done. Words are never broken: a word too wide for the screen gets a line of its own that runs past the edges. Lines are centered by default; with `textAlign: 'justify'`, one-line and ALL-CAPS paragraphs are still centered as titles. Use it with `Stereogram.animate()`, or set `position` yourself and call `render()`.
+
+```javascript
+var crawl = new Stereogram.TextCrawlDepthMapper(longText, {
+  speed: 40,          // pixels per second
+  fontSize: null,     // default: width / 7
+  textAlign: 'center', // or 'justify', 'left', 'right'
+  angle: 0.3,         // 0: scrolls straight up at full size, 1: recedes steeply
+  textDepth: 0.85,    // how far the letters stand out (0 to 1)
+  planeDepth: 0.15,   // depth of the background plane at the bottom (0 for flat)
+  loop: true
+});
+crawl.setText('Something else');
+crawl.restart();
+crawl.speed = 80;
+```
+
+See the top of `depthmappers/TextCrawlDepthMapper.js` for every option (padding, tilt, fadeTop...).
+
+#### VideoDepthMapper
+
+Generate depth maps from the current frame of a `<video>` (or anything else you can `drawImage()`). With `Stereogram.animate()`, it turns a grayscale depth-map video (white is near) into a 3D movie. See `examples/movie.html`.
+
+```javascript
+var video = document.getElementById('my-depth-video');
+video.play();
+Stereogram.animate({
+  el: 'stereogram',
+  depthMapper: new Stereogram.VideoDepthMapper(video, {
+    inverted: false,  // true if dark means near
+    region: { x: 0.5, y: 0, width: 0.5, height: 1 } // optional: just the right half
+  })
+});
 ```
 
 #### TemplateDepthMapper
@@ -195,6 +276,23 @@ Use it!
 ```javascript
 Stereogram.render({ el: 'my-stereogram', depthMapper: new MyDepthMapper(...) });
 ```
+
+To animate, use the third argument to `make()`. It's only passed by `Stereogram.animate()`, so check for it. `examples/scenes.js` has a few animated depth mappers to borrow from.
+
+```javascript
+var Pulse = Stereogram.DepthMapper.extend({
+  constructor: function () { this.time = 0; },
+  make: function (width, height, frame) {
+    if (frame) this.time += frame.delta;
+    var depth = 0.5 + 0.4 * Math.sin(this.time * 3);
+    return [[0, 0, 0], [0, depth, 0], [0, 0, 0]]; // a pulsing square
+  }
+});
+
+Stereogram.animate({ el: 'my-canvas', depthMapper: new Pulse() });
+```
+
+`make()` can return `null` while it has nothing to show yet (e.g. a video that's still loading), and that frame is skipped.
 
 ## Other Stuff...
 

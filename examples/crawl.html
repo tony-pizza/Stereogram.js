@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stereogram Text Crawl</title>
+<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+<main>
+  <h1>Stereogram Text Crawl</h1>
+  <p>Any amount of text, crawling up and away into the distance, hidden in a moving stereogram.</p>
+
+  <div class="stage">
+    <canvas id="stereogram" width="800" height="600" role="img" aria-label="Animated stereogram of the text crawl"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="play" class="primary">Pause</button>
+    <button id="restart">Restart</button>
+    <label>Speed <input id="speed" type="range" min="0" max="160" step="1" value="40"></label>
+    <label>Text size <input id="size" type="range" min="60" max="320" step="5" value="115"></label>
+    <label title="How far the letters stand out from the background">Text height <input id="height" type="range" min="10" max="100" step="5" value="85"></label>
+    <label title="0: the text scrolls straight up at full size. Higher: it recedes into the distance.">Angle <input id="angle" type="range" min="0" max="100" step="5" value="30"></label>
+    <span id="stats" class="stats"></span>
+  </div>
+
+  <div class="controls">
+    <label class="switch" title="On: the dots stay put and only the ones the moving text needs change. Off: brand new random static every frame.">
+      <input id="stable" type="checkbox" checked>
+      <span class="track"></span>
+      <span id="stable-label">Stable pattern</span>
+    </label>
+    <label><input id="depth-map" type="checkbox"> Show depth map</label>
+    <label>Colors
+      <select id="palette">
+        <option value="bw">Black &amp; white</option>
+        <option value="gold" selected>Gold</option>
+        <option value="rainbow">Rainbow</option>
+        <option value="ocean">Ocean</option>
+      </select>
+    </label>
+  </div>
+
+  <textarea id="text" spellcheck="false">EPISODE ZERO
+
+THE HIDDEN DIMENSION
+
+It is an age of flat screens. Across a galaxy of glowing rectangles, every picture has been pressed thin, its depth stolen by the tyranny of two dimensions.
+
+But a small band of pixels has kept an old secret alive. Buried in a storm of random dots, a third dimension waits for anyone patient enough to look through the noise instead of at it.
+
+Relax your eyes. Let your gaze drift past the screen, as if you were staring at something far behind it. The dots will swim, then lock together, and these words will rise out of the static and sail off toward the stars.
+
+Each frame is drawn from scratch, yet the pattern holds still. Only the dots that the moving letters need are allowed to change. Flip the switch below the crawl and every frame becomes fresh static instead, and the words exist only in depth.
+
+Now the pixels race to spread their message to every browser in the galaxy, armed with nothing but JavaScript, a canvas, and an algorithm first published in 1994....
+
+If you can read this, it worked.</textarea>
+  <div class="controls">
+    <button id="apply" class="primary">Crawl this text</button>
+    <button id="embed">Get embed code</button>
+    <span class="hint">Paste as much text as you like. Blank lines separate paragraphs.</span>
+  </div>
+
+  <section id="embed-panel" class="embed" hidden>
+    <p class="hint">Paste this into any web page to show just the stereogram, with this text and these settings. It needs <code>stereogram.min.js</code> and <code>depthmappers/TextCrawlDepthMapper.js</code> from <a href="https://github.com/tony-pizza/Stereogram.js">Stereogram.js</a>, uploaded next to the page.</p>
+    <textarea id="embed-code" readonly spellcheck="false"></textarea>
+    <div class="controls">
+      <button id="copy-embed" class="primary">Copy</button>
+      <span id="copy-status" class="hint" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <details>
+    <summary>How do I see it?</summary>
+    <p>Bring your face close to the screen and look "through" it, as if focusing on something far away, then slowly lean back while keeping your eyes relaxed. The dots will start to overlap and the text will appear floating above a tilted plane. If you're stuck, turn on <em>Show depth map</em> to see what you should be looking for.</p>
+    <p>While paused, scroll over the crawl with your mouse wheel or trackpad to move the text back and forth. Space bar pauses.</p>
+  </details>
+</main>
+
+<script src="../stereogram.js"></script>
+<script src="../depthmappers/TextCrawlDepthMapper.js"></script>
+<script src="demo.js"></script>
+<script>
+  var canvas = document.getElementById('stereogram'),
+      textarea = document.getElementById('text'),
+      speed = document.getElementById('speed'),
+      size = document.getElementById('size'),
+      height = document.getElementById('height'),
+      angle = document.getElementById('angle'),
+      stable = document.getElementById('stable'),
+      stableLabel = document.getElementById('stable-label');
+
+  var crawl = new Stereogram.TextCrawlDepthMapper(textarea.value, {
+    speed: parseFloat(speed.value),
+    fontSize: parseFloat(size.value),
+    textDepth: parseFloat(height.value) / 100,
+    angle: parseFloat(angle.value) / 100
+  });
+
+  var animation = Stereogram.animate({
+    el: canvas,
+    depthMapper: crawl,
+    fps: 30
+  });
+
+  Demo.bindControls(animation, {
+    play: 'play',
+    stable: 'stable',
+    depthMap: 'depth-map',
+    palette: 'palette',
+    stats: 'stats'
+  });
+
+  function updateStableLabel() {
+    stableLabel.textContent = stable.checked ? 'Stable pattern' : 'Random static';
+  }
+  stable.addEventListener('change', updateStableLabel);
+  updateStableLabel();
+
+  speed.addEventListener('input', function () {
+    crawl.speed = parseFloat(speed.value);
+  });
+
+  height.addEventListener('input', function () {
+    crawl.textDepth = parseFloat(height.value) / 100;
+    if (!animation.playing) animation.renderFrame(0);
+  });
+
+  angle.addEventListener('input', function () {
+    crawl.angle = parseFloat(angle.value) / 100;
+    if (!animation.playing) animation.renderFrame(0);
+  });
+
+  size.addEventListener('input', function () {
+    var newSize = parseFloat(size.value);
+    // keep roughly the same line at the bottom of the screen
+    crawl.position *= newSize / crawl.fontSize;
+    crawl.fontSize = newSize;
+    if (!animation.playing) animation.renderFrame(0);
+  });
+
+  document.getElementById('restart').addEventListener('click', function () {
+    crawl.restart();
+    if (!animation.playing) animation.renderFrame(0);
+  });
+
+  document.getElementById('apply').addEventListener('click', function () {
+    crawl.setText(textarea.value).restart();
+    if (!animation.playing) animation.renderFrame(0);
+    canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  // while paused, scrub through the crawl with the mouse wheel
+  // (while playing, the wheel scrolls the page as usual)
+  canvas.addEventListener('wheel', function (e) {
+    if (animation.playing) return;
+    e.preventDefault();
+    crawl.position = Math.max(0, crawl.position + e.deltaY);
+    animation.renderFrame(0);
+  }, { passive: false });
+
+  // embed code with the current text and settings
+  var embedPanel = document.getElementById('embed-panel'),
+      embedCode = document.getElementById('embed-code'),
+      copyStatus = document.getElementById('copy-status');
+
+  function buildEmbedCode() {
+    // escape "<" so a closing script tag in the text can't end the script early
+    var text = JSON.stringify(textarea.value).replace(/</g, '\\u003c'),
+        colors = JSON.stringify(Demo.palettes[document.getElementById('palette').value]).replace(/,/g, ', ');
+    return [
+      '<canvas id="stereogram-crawl" width="' + canvas.width + '" height="' + canvas.height + '" style="max-width: 100%; height: auto;"></canvas>',
+      '<script src="stereogram.min.js"><\/script>',
+      '<script src="TextCrawlDepthMapper.js"><\/script>',
+      '<script>',
+      '  Stereogram.animate({',
+      '    el: \'stereogram-crawl\',',
+      '    colors: ' + colors + ',',
+      '    stablePattern: ' + stable.checked + ',',
+      '    depthMapper: new Stereogram.TextCrawlDepthMapper(' + text + ', {',
+      '      speed: ' + crawl.speed + ',',
+      '      fontSize: ' + crawl.fontSize + ',',
+      '      textDepth: ' + crawl.textDepth + ',',
+      '      angle: ' + crawl.angle,
+      '    })',
+      '  });',
+      '<\/script>'
+    ].join('\n');
+  }
+
+  function updateEmbedCode() {
+    if (embedPanel.hidden) return;
+    embedCode.value = buildEmbedCode();
+    embedCode.rows = embedCode.value.split('\n').length + 1;
+    copyStatus.textContent = '';
+  }
+
+  document.getElementById('embed').addEventListener('click', function () {
+    embedPanel.hidden = !embedPanel.hidden;
+    updateEmbedCode();
+  });
+
+  // keep the code in step with the controls and the text box
+  document.querySelector('main').addEventListener('input', function (e) {
+    if (e.target !== embedCode) updateEmbedCode();
+  });
+  document.querySelector('main').addEventListener('change', updateEmbedCode);
+
+  document.getElementById('copy-embed').addEventListener('click', function () {
+    embedCode.select();
+    var done = function () { copyStatus.textContent = 'Copied.'; },
+        fallback = function () {
+          try {
+            document.execCommand('copy');
+            done();
+          } catch (err) {
+            copyStatus.textContent = 'Press Cmd/Ctrl+C to copy.';
+          }
+        };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(embedCode.value).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+</script>
+</body>
+</html>

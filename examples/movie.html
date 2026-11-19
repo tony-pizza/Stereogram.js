@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stereogram Movies</title>
+<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+<main>
+  <h1>Stereogram Movies</h1>
+  <p>Animated depth maps played back as moving stereograms. Pick a built-in movie or play your own depth-map video.</p>
+
+  <div class="stage" id="stage">
+    <canvas id="stereogram" width="800" height="600" role="img" aria-label="Animated stereogram movie"></canvas>
+    <div class="overlay" id="overlay" hidden></div>
+  </div>
+
+  <div class="controls">
+    <button id="play" class="primary">Pause</button>
+    <label>Movie
+      <select id="movie">
+        <option value="orbits">Orbiting moons</option>
+        <option value="ripples">Raindrops</option>
+        <option value="cube">Tumbling cube</option>
+        <option value="video">Your depth video…</option>
+      </select>
+    </label>
+    <label>Speed
+      <select id="speed">
+        <option value="0.25">¼×</option>
+        <option value="0.5">½×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.5">1½×</option>
+        <option value="2">2×</option>
+      </select>
+    </label>
+    <span id="stats" class="stats"></span>
+  </div>
+
+  <div class="controls">
+    <label class="switch" title="On: the dots stay put and only the ones the moving depth needs change. Off: brand new random static every frame.">
+      <input id="stable" type="checkbox" checked>
+      <span class="track"></span>
+      <span id="stable-label">Stable pattern</span>
+    </label>
+    <label><input id="depth-map" type="checkbox"> Show depth map</label>
+    <label>Colors
+      <select id="palette">
+        <option value="bw">Black &amp; white</option>
+        <option value="gold">Gold</option>
+        <option value="rainbow">Rainbow</option>
+        <option value="ocean" selected>Ocean</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="controls" id="video-controls" hidden>
+    <input id="file" type="file" accept="video/*">
+    <label>Use
+      <select id="region">
+        <option value="full">Whole frame</option>
+        <option value="left">Left half</option>
+        <option value="right">Right half</option>
+        <option value="top">Top half</option>
+        <option value="bottom">Bottom half</option>
+      </select>
+    </label>
+    <label><input id="invert" type="checkbox"> Dark is near</label>
+    <span class="hint">Your video stays on this computer; nothing is uploaded.</span>
+  </div>
+
+  <video id="video" muted loop playsinline hidden></video>
+
+  <details>
+    <summary>How do I see it?</summary>
+    <p>Bring your face close to the screen and look "through" it, as if focusing on something far away, then slowly lean back while keeping your eyes relaxed. Once the image locks into 3D, it stays locked while it moves. Turn on <em>Show depth map</em> to see what you should be looking for. Space bar pauses.</p>
+    <p>With <em>Stable pattern</em> on, the dots hold still and only the ones the changing depth needs are redrawn, so the shapes seem to move through a fixed texture. Switch it off and every frame becomes brand new random static: you can only see the movie in 3D, because no single frame shows anything.</p>
+  </details>
+
+  <details>
+    <summary>What's a depth video?</summary>
+    <p>A grayscale video where brightness means distance: white is near, black is far. Depth-estimation tools can make one from ordinary footage, and 3D software can render one directly. If your file shows the original footage and its depth side by side, use <em>Use</em> to pick the half with the depth map, and if near things are dark, tick <em>Dark is near</em>. You can also drop a video file onto the picture.</p>
+  </details>
+</main>
+
+<script src="../stereogram.js"></script>
+<script src="../depthmappers/VideoDepthMapper.js"></script>
+<script src="scenes.js"></script>
+<script src="demo.js"></script>
+<script>
+  var canvas = document.getElementById('stereogram'),
+      stage = document.getElementById('stage'),
+      overlay = document.getElementById('overlay'),
+      movieSelect = document.getElementById('movie'),
+      speedSelect = document.getElementById('speed'),
+      videoControls = document.getElementById('video-controls'),
+      fileInput = document.getElementById('file'),
+      regionSelect = document.getElementById('region'),
+      invert = document.getElementById('invert'),
+      video = document.getElementById('video'),
+      stable = document.getElementById('stable'),
+      stableLabel = document.getElementById('stable-label'),
+      videoUrl = null;
+
+  var regions = {
+    full:   { x: 0,   y: 0,   width: 1,   height: 1 },
+    left:   { x: 0,   y: 0,   width: 0.5, height: 1 },
+    right:  { x: 0.5, y: 0,   width: 0.5, height: 1 },
+    top:    { x: 0,   y: 0,   width: 1,   height: 0.5 },
+    bottom: { x: 0,   y: 0.5, width: 1,   height: 0.5 }
+  };
+
+  var movies = {
+    orbits: new Scenes.Orbits(),
+    ripples: new Scenes.Ripples(),
+    cube: new Scenes.Cube(),
+    video: new Stereogram.VideoDepthMapper(video)
+  };
+
+  var animation = Stereogram.animate({
+    el: canvas,
+    depthMapper: movies[movieSelect.value],
+    fps: 30
+  });
+
+  Demo.bindControls(animation, {
+    play: 'play',
+    stable: 'stable',
+    depthMap: 'depth-map',
+    palette: 'palette',
+    stats: 'stats',
+    onToggle: syncVideo
+  });
+
+  function syncVideo() {
+    var wantsVideo = movieSelect.value === 'video' && animation.playing && video.src;
+    if (wantsVideo && video.paused) video.play();
+    else if (!wantsVideo && !video.paused) video.pause();
+  }
+
+  function showOverlay(message) {
+    overlay.textContent = message || '';
+    overlay.hidden = !message;
+  }
+
+  function selectMovie() {
+    var isVideo = movieSelect.value === 'video';
+    videoControls.hidden = !isVideo;
+    animation.setDepthMapper(movies[movieSelect.value]);
+    showOverlay(isVideo && !video.src ? 'Choose a depth video below, or drop one here.' : '');
+    syncVideo();
+    if (!animation.playing) animation.renderFrame(0);
+  }
+
+  function loadVideo(file) {
+    if (!file || !/^video\//.test(file.type)) {
+      showOverlay('That doesn\'t look like a video file. Try an MP4 or WebM.');
+      return;
+    }
+    if (videoUrl) URL.revokeObjectURL(videoUrl);
+    videoUrl = URL.createObjectURL(file);
+    video.src = videoUrl;
+    video.playbackRate = parseFloat(speedSelect.value);
+    movieSelect.value = 'video';
+    selectMovie();
+    showOverlay('Loading ' + file.name + '…');
+  }
+
+  video.addEventListener('loadeddata', function () {
+    showOverlay('');
+    video.playbackRate = parseFloat(speedSelect.value);
+    syncVideo();
+  });
+
+  video.addEventListener('error', function () {
+    showOverlay('This browser can\'t play that video. Try an MP4 (H.264) or WebM file.');
+  });
+
+  movieSelect.addEventListener('change', selectMovie);
+
+  speedSelect.addEventListener('change', function () {
+    var speed = parseFloat(speedSelect.value);
+    movies.orbits.speed = movies.ripples.speed = movies.cube.speed = speed;
+    video.playbackRate = speed;
+  });
+
+  fileInput.addEventListener('change', function () {
+    loadVideo(fileInput.files[0]);
+  });
+
+  regionSelect.addEventListener('change', function () {
+    movies.video.region = regions[regionSelect.value];
+    if (!animation.playing) animation.renderFrame(0);
+  });
+
+  invert.addEventListener('change', function () {
+    movies.video.inverted = invert.checked;
+    if (!animation.playing) animation.renderFrame(0);
+  });
+
+  function updateStableLabel() {
+    stableLabel.textContent = stable.checked ? 'Stable pattern' : 'Random static';
+  }
+  stable.addEventListener('change', updateStableLabel);
+  updateStableLabel();
+
+  // drag and drop a video onto the picture
+  stage.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    stage.classList.add('dragging');
+  });
+  stage.addEventListener('dragleave', function () {
+    stage.classList.remove('dragging');
+  });
+  stage.addEventListener('drop', function (e) {
+    e.preventDefault();
+    stage.classList.remove('dragging');
+    loadVideo(e.dataTransfer.files[0]);
+  });
+</script>
+</body>
+</html>

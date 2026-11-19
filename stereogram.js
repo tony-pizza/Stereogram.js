@@ -97,23 +97,43 @@
        * Thimbleby, Stuart Inglis, and Ian H. Witten. The following code was
        * translated from the C code that was featured in the article.
        * http://www.cs.sfu.ca/CourseCentral/414/li/material/refs/SIRDS-Computer-94.pdf
+       *
+       * Optional extras (used by Stereogram.animate):
+       *  - opts.indices:  Uint8Array(width * height) that receives the color
+       *                   index chosen for every pixel.
+       *  - opts.previous: the `indices` of the previous frame. When given, the
+       *                   pattern is kept as stable as possible: every group of
+       *                   pixels the depth map links together takes the color
+       *                   most of its members already had, so only the pixels
+       *                   that the new depth forces to change actually change.
+       *                   Leave it out to get fresh random dots.
+       *  - opts.pixels:   Uint8ClampedArray(width * height * 4) to write RGBA
+       *                   into (e.g. an ImageData's data) instead of allocating.
        */
 
       var x, y, i, left, right, visible, t, zt, k, sep, z, pixelOffset, rgba,
+          row, rowOffset, r, c, best, bestCount,
           width = opts.width,
           height = opts.height,
           depthMap = opts.depthMap,
-          numColors = opts.colors.length,
-          same, // points to a pixel to the right
+          colors = opts.colors,
+          numColors = colors.length,
+          previous = opts.previous || null,
+          indices = opts.indices || null,
           dpi = 72, // assuming output of 72 dots per inch
           eyeSep = Math.round(2.5 * dpi), // eye separation assumed to be 2.5 inches
           mu = (1 / 3), // depth of field (fraction of viewing distance)
-          pixels = new Uint8ClampedArray(width * height * 4);
+          pixels = opts.pixels || new Uint8ClampedArray(width * height * 4),
+          // max image width (for Uint16Array) is 65536
+          same = new Uint16Array(width), // points to a pixel to the right
+          root = new Uint16Array(width), // the unconstrained pixel each pixel copies
+          rowColors = new Uint8Array(width), // color index of each pixel in this row
+          votes = previous ? new Uint32Array(width * numColors) : null;
 
       // for each row
       for (y = 0; y < height; y++) {
-        // max image width (for Uint16Array) is 65536
-        same = new Uint16Array(width); // points to a pixel to the right
+        row = depthMap[y];
+        rowOffset = y * width;
 
         for (x = 0; x < width; x++) {
           same[x] = x; // each pixel is initially linked with itself
@@ -122,7 +142,7 @@
         // for each column
         for (x = 0; x < width; x++) {
 
-          z = depthMap[y][x];
+          z = row[x];
 
           // stereo separation corresponding to z
           sep = Math.round((1 - (mu * z)) * eyeSep / (2 - (mu * z)));
@@ -137,7 +157,7 @@
             t = 1;
             do {
               zt = z + (2 * (2 - (mu * z)) * t / (mu * eyeSep));
-              visible = (depthMap[y][x-t] < zt) && (depthMap[y][x+t] < zt); // false if obscured
+              visible = (row[x-t] < zt) && (row[x+t] < zt); // false if obscured
               t++;
             } while (visible && zt < 1);
 
@@ -156,25 +176,66 @@
           }
         }
 
+        // Every pixel copies the pixel `same[x]` to its right, so following
+        // the links ends at an unconstrained "root" pixel. All pixels that
+        // share a root must share a color.
         for (x = (width - 1); x >= 0; x--) {
-          pixelOffset = (y * width * 4) + (x * 4);
-          if (same[x] === x) {
-            // set random color
-            rgba = opts.colors[Math.floor(Math.random() * numColors)];
-            for (i = 0; i < 4; i++) {
-              pixels[pixelOffset + i] = rgba[i];
+          root[x] = (same[x] === x) ? x : root[same[x]];
+        }
+
+        if (previous) {
+          // stable pattern: each root takes the color most of its pixels had
+          // in the previous frame
+          for (x = 0; x < width; x++) {
+            if (same[x] === x) {
+              for (c = 0; c < numColors; c++) votes[(x * numColors) + c] = 0;
             }
-          } else {
-            // constrained pixel, obey constraint
-            pixelOffset = (y * width * 4) + (x * 4);
-            for (i = 0; i < 4; i++) {
-              pixels[pixelOffset + i] = pixels[(y * width * 4) + (same[x] * 4) + i];
+          }
+          for (x = 0; x < width; x++) {
+            c = previous[rowOffset + x];
+            if (c < numColors) votes[(root[x] * numColors) + c]++;
+          }
+          for (x = 0; x < width; x++) {
+            if (same[x] !== x) continue;
+            // ties go to the color the root pixel itself had
+            best = previous[rowOffset + x];
+            if (best >= numColors) best = Math.floor(Math.random() * numColors);
+            bestCount = votes[(x * numColors) + best];
+            for (c = 0; c < numColors; c++) {
+              if (votes[(x * numColors) + c] > bestCount) {
+                best = c;
+                bestCount = votes[(x * numColors) + c];
+              }
             }
+            rowColors[x] = best;
+          }
+        } else {
+          // fresh random color for every unconstrained pixel
+          for (x = 0; x < width; x++) {
+            if (same[x] === x) rowColors[x] = Math.floor(Math.random() * numColors);
+          }
+        }
+
+        for (x = 0; x < width; x++) {
+          r = rowColors[root[x]];
+          if (indices) indices[rowOffset + x] = r;
+          rgba = colors[r];
+          pixelOffset = (rowOffset + x) * 4;
+          for (i = 0; i < 4; i++) {
+            pixels[pixelOffset + i] = rgba[i];
           }
         }
       }
 
       return pixels;
+    },
+
+    // Animate a stereogram on a <canvas>. The depth mapper's
+    // `generate(width, height, frame)` is called for every frame, where
+    // `frame` is `{ index, time, delta }` (time and delta in seconds).
+    // Returns a Stereogram.Animation (see below for its options and methods).
+    animate: function (opts) {
+      return new Stereogram.Animation(opts);
     },
 
     helpers: {
@@ -211,9 +272,12 @@
     return [[0]];
   };
 
-  DepthMapper.prototype.generate = function (width, height) {
-    if (this.autoResize) return this.resize(this.make(width, height), width, height);
-    else return this.make(width, height);
+  // `frame` is only passed when animating: { index, time, delta }
+  DepthMapper.prototype.generate = function (width, height, frame) {
+    var depthMap = this.make(width, height, frame);
+    // a falsy depth map means "nothing to show yet" (e.g. a video still loading)
+    if (this.autoResize && depthMap) return this.resize(depthMap, width, height);
+    else return depthMap;
   };
 
   DepthMapper.prototype.resize = function (origDepthMap, width, height) {
@@ -281,6 +345,164 @@
   };
 
   Stereogram.DepthMapper = DepthMapper;
+
+
+// -- Animation --
+
+  var Animation = function (opts) {
+    opts = opts || {};
+
+    var element = (typeof opts.el === 'string' ? document.getElementById(opts.el) : opts.el);
+    if (!element || element.tagName !== 'CANVAS') {
+      throw('Stereogram: animate() needs a <canvas> el, got: ' + opts.el);
+    }
+    if (!opts.depthMapper) throw('Stereogram: animate() needs a depthMapper');
+
+    this.el = element;
+    this.width = opts.width || element.width;
+    this.height = opts.height || element.height;
+    element.width = this.width;
+    element.height = this.height;
+    this.context = element.getContext('2d');
+    this.imageData = this.context.createImageData(this.width, this.height);
+
+    this.depthMapper = opts.depthMapper;
+    // true: keep the dot pattern still and only change the pixels the new
+    // depth requires. false: brand new random static every frame.
+    this.stablePattern = opts.stablePattern !== false;
+    // show the raw depth map (grayscale) instead of the stereogram
+    this.showDepthMap = !!opts.showDepthMap;
+    this.fps = (opts.fps === undefined) ? 30 : opts.fps; // max frames per second; 0 = every display frame
+    this.onFrame = opts.onFrame || null;
+
+    this.setColors(opts.colors || [[255, 255, 255, 255], [0, 0, 0, 255]]);
+
+    this.time = 0;
+    this.frameIndex = 0;
+    this.playing = false;
+    this._indices = new Uint8Array(this.width * this.height);
+    this._previous = null;
+    this._lastTick = null;
+    this._raf = null;
+
+    var self = this;
+    this._tick = function (now) { self._onTick(now); };
+
+    if (opts.autoplay !== false) this.play();
+  };
+
+  Animation.prototype.setColors = function (colors) {
+    var converted = [];
+    for (var i = 0; i < colors.length; i++) {
+      converted.push(typeof colors[i] === 'string' ? Stereogram.helpers.hexToRGBa(colors[i]) : colors[i]);
+    }
+    // the previous frame's color indices only make sense for the same number of colors
+    if (this.colors && this.colors.length !== converted.length) this._previous = null;
+    this.colors = converted;
+    return this;
+  };
+
+  Animation.prototype.setDepthMapper = function (depthMapper) {
+    this.depthMapper = depthMapper;
+    return this;
+  };
+
+  Animation.prototype.play = function () {
+    if (this.playing) return this;
+    this.playing = true;
+    this._lastTick = null;
+    this._raf = requestAnimationFrame(this._tick);
+    return this;
+  };
+
+  Animation.prototype.pause = function () {
+    this.playing = false;
+    if (this._raf) cancelAnimationFrame(this._raf);
+    this._raf = null;
+    return this;
+  };
+
+  Animation.prototype.toggle = function () {
+    return this.playing ? this.pause() : this.play();
+  };
+
+  // forget the previous frame so the next one starts from fresh random dots
+  Animation.prototype.resetPattern = function () {
+    this._previous = null;
+    return this;
+  };
+
+  Animation.prototype._onTick = function (now) {
+    if (!this.playing) return;
+    this._raf = requestAnimationFrame(this._tick);
+    if (this._lastTick === null) {
+      this._lastTick = now;
+      this.renderFrame(0);
+      return;
+    }
+    var elapsed = (now - this._lastTick) / 1000;
+    // a couple of ms of slack so 30fps on a 60Hz display hits every other frame
+    if (this.fps && elapsed < (1 / this.fps) - 0.004) return;
+    this._lastTick = now;
+    // don't jump ahead after the tab was hidden
+    this.renderFrame(Math.min(elapsed, 0.1));
+  };
+
+  // Render one frame right now, advancing time by `delta` seconds (default 0,
+  // which redraws the current moment, e.g. after changing colors while paused).
+  Animation.prototype.renderFrame = function (delta) {
+    delta = delta || 0;
+    var started = Date.now(),
+        frame = { index: this.frameIndex, time: this.time + delta, delta: delta },
+        depthMap = this.depthMapper.generate(this.width, this.height, frame),
+        indices, x, y, row, v, offset;
+
+    this.time += delta;
+    if (!depthMap) return false;
+
+    if (this.showDepthMap) {
+      var data = this.imageData.data;
+      for (y = 0; y < this.height; y++) {
+        row = depthMap[y];
+        offset = y * this.width * 4;
+        for (x = 0; x < this.width; x++) {
+          v = Math.round(row[x] * 255);
+          data[offset] = data[offset + 1] = data[offset + 2] = v;
+          data[offset + 3] = 255;
+          offset += 4;
+        }
+      }
+    } else {
+      indices = this._indices;
+      Stereogram.generatePixelData({
+        width: this.width,
+        height: this.height,
+        depthMap: depthMap,
+        colors: this.colors,
+        previous: this.stablePattern ? this._previous : null,
+        indices: indices,
+        pixels: this.imageData.data
+      });
+      // swap buffers: this frame becomes the next frame's "previous"
+      this._indices = this._previous || new Uint8Array(this.width * this.height);
+      this._previous = indices;
+    }
+
+    this.context.putImageData(this.imageData, 0, 0);
+    this.frameIndex++;
+
+    if (this.onFrame) {
+      this.onFrame({
+        index: frame.index,
+        time: this.time,
+        delta: delta,
+        renderTime: Date.now() - started
+      });
+    }
+    return true;
+  };
+
+  Stereogram.Animation = Animation;
 
 
   this.Stereogram = Stereogram;
